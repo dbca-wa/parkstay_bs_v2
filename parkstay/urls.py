@@ -41,16 +41,16 @@ router.register(r'rates', api.RateViewset)
 router.register(r'closureReasons', api.ClosureReasonViewSet)
 router.register(r'priceReasons', api.PriceReasonViewSet)
 router.register(r'maxStayReasons', api.MaximumStayReasonViewSet)
-router.register(r'users', api.UsersViewSet)
+#router.register(r'users', api.UsersViewSet)
 router.register(r'contacts', api.ContactViewSet)
 router.register(r'countries', api.CountryViewSet)
 router.register(r'discountReasons', api.DiscountReasonViewset)
 
 api_patterns = [
     url(r'^api/profile$', api.GetProfile.as_view(), name='get-profile'),
-    url(r'^api/profile/update_personal$', api.UpdateProfilePersonal.as_view(), name='update-profile-personal'),
-    url(r'^api/profile/update_contact$', api.UpdateProfileContact.as_view(), name='update-profile-contact'),
-    url(r'^api/profile/update_address$', api.UpdateProfileAddress.as_view(), name='update-profile-address'),
+    #url(r'^api/profile/update_personal$', api.UpdateProfilePersonal.as_view(), name='update-profile-personal'),
+    #url(r'^api/profile/update_contact$', api.UpdateProfileContact.as_view(), name='update-profile-contact'),
+    #url(r'^api/profile/update_address$', api.UpdateProfileAddress.as_view(), name='update-profile-address'),
     url(r'^api/oracle_job$', api.OracleJob.as_view(), name='get-oracle'),
     url(r'^api/bulkPricing', api.BulkPricingView.as_view(), name='bulkpricing-api'),
     url(r'^api/campground_availabilty_view/', api.campground_availabilty_view, name='campground_availabilty_view'),
