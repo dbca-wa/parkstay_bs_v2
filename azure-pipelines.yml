@@ -30,7 +30,7 @@ stages:
         dockerfile: '$(Build.SourcesDirectory)/Dockerfile'
         tags: | 
               latest
-              $(tagDate)
+              fix_31012024_$(tagDate)
         containerRegistry: DockerHub
         repository: dbcawa/parkstay_v2
     - task: Docker@2
@@ -39,7 +39,7 @@ stages:
         command: buildAndPush
         dockerfile: '$(Build.SourcesDirectory)/dockerdev/Dockerfile'
         tags: | 
-              parkstay_v2_latest
-              parkstay_v2_$(tagDate)              
+              parkstay_v2_latest_fix_31012024
+              parkstay_v2_$(tagDate)_fix_31012024             
         containerRegistry: DockerHub
         repository: dbcawa/docker_app_dev
