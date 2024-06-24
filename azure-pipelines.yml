@@ -29,8 +29,8 @@ stages:
         command: buildAndPush
         dockerfile: '$(Build.SourcesDirectory)/Dockerfile'
         tags: | 
-              latest
-              $(tagDate)
+              latest_patch
+              $(tagDate)_patch
         containerRegistry: DockerHub
         repository: dbcawa/parkstay_v2
     - task: Docker@2
