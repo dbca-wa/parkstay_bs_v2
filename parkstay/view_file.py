@@ -20,7 +20,7 @@ def getFile(request, height, width):
              reszie_fn = reszie_file_name+'-'+height+'x'+width+reszie_file_name_extension
              if os.path.isfile(reszie_fn) is False:
                  img = Image.open(file_name_path)
-                 img = img.resize((int(width), int(height)), Image.ANTIALIAS)
+                 img = img.resize((int(width), int(height)), Image.Resampling.LANCZOS)
                  img.save(reszie_fn)
 
              the_file = open(reszie_fn, 'rb')
@@ -52,7 +52,7 @@ def getFileCroppedResized(request, height,width):
              reszie_fn = reszie_file_name+'-cropped-'+height+'x'+width+reszie_file_name_extension
              if os.path.isfile(reszie_fn) is False:
                  img = Image.open(file_name_path)
-                 img = img.resize((int(width), int(height)), Image.ANTIALIAS)
+                 img = img.resize((int(width), int(height)), Image.Resampling.LANCZOS)
                  img = crop_max_square(img)
                  img.save(reszie_fn)
 
