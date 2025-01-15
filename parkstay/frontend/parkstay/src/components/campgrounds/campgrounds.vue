@@ -6,9 +6,9 @@
             <div class="panel panel-default border p-3" id="returns">
                 <base-panel-heading :title="title">
                     <div class="form-group text-end">
-                        <a style="margin-top: 20px;" class="btn btn-primary" @click="addCampground()">Add
+                        <a class="btn btn-primary mt-4 me-2" @click="addCampground()">Add
                             Campground</a>
-                        <a style="margin-top: 20px;" class="btn btn-primary" @click="showBulkClose = !showBulkClose">
+                        <a class="btn btn-primary mt-4" @click="showBulkClose = !showBulkClose">
                             Close Campgrounds</a>
                     </div>
                 </base-panel-heading>
@@ -176,32 +176,32 @@ const regions = computed(() => store.getters.regions)
 const districts = computed(() => store.getters.districts)
 const parks = computed(() => store.getters.parks)
 
-watch(() => showBulkClose, function (value) {
+watch(() => showBulkClose.value, function (value) {
     bulkClose.value.isModalOpen = value;
     bulkClose.value.initSelectTwo();
 })
-watch(() => selected_region, function (value) {
+watch(() => selected_region.value, function (value) {
     if (value != 'All') {
         dtGrounds.value.vmDataTable.columns(2).search(value).draw();
     } else {
         dtGrounds.value.vmDataTable.columns(2).search('').draw();
     }
 })
-watch(() => selected_status, function (value) {
+watch(() => selected_status.value, function (value) {
     if (value != 'All') {
         dtGrounds.value.vmDataTable.columns(1).search(value).draw();
     } else {
         dtGrounds.value.vmDataTable.columns(1).search('').draw();
     }
 })
-watch(() => selected_district, function (value) {
+watch(() => selected_district.value, function (value) {
     if (value != 'All') {
         dtGrounds.value.vmDataTable.columns(3).search(value).draw();
     } else {
         dtGrounds.value.vmDataTable.columns(3).search('').draw();
     }
 })
-watch(() => selected_park, function (value) {
+watch(() => selected_park.value, function (value) {
     if (value != 'All') {
         dtGrounds.value.vmDataTable.columns(4).search(value).draw();
     } else {
@@ -218,7 +218,7 @@ const closeBulkClose = function () {
     dtGrounds.value.vmDataTable.ajax.reload();
 }
 const handleOpenCampground = function (value) {
-    pkCgOpenRef.value = value
+    pkCgOpenRef.value.isOpen = value
 }
 const handleCloseCampground = function (value) {
     pkCgCloseRef.value.isOpen = value
@@ -228,7 +228,7 @@ const showOpenCloseCG = function () {
     pkCgCloseRef.value.isOpen = true
 }
 const showOpenOpenCG = function () {
-    pkCgOpenRef.value = true
+    pkCgOpenRef.value.isOpen = true
 }
 
 const onRefreshCGTable =  function () {

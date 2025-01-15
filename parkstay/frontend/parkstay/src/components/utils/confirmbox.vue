@@ -109,10 +109,6 @@ const confirmBox = function (json) {
 onMounted(function () {
     confirmBox(options.value);
     bus.on('showAlert', function (_id) {
-        console.log("ShowAlert +1");
-        console.log(confirmModal);
-        console.log(_id);
-        console.log($("#" + confirmModal));
         if (_id === id.value) {
             $("#" + confirmModal).modal('show');
         }

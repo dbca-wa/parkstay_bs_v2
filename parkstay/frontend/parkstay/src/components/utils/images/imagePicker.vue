@@ -3,7 +3,7 @@
         <div class="form-group">
             <div class="col-sm-12">
                 <span class="btn btn-primary btn-file btn-sm">
-                    <i class="fa fa-fw fa-camera"></i><input multiple ref="imagePicker" type="file" name='img'
+                    <i class="fa fa-fw fa-camera"></i><input multiple ref="imagePicker" type="file" name='img'  accept="image/*"
                         @change="readURL()" />
                     Add Image
                 </span>

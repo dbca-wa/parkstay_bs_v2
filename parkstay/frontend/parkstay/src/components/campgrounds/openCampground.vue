@@ -154,12 +154,19 @@ const addFormValidations = function () {
     });
 }
 
+const clearValues = () => {
+    picker.value.clear();
+    formdata.value.closure_reason = "";
+    formdata.value.details = "";
+}
+
 defineExpose({ formdata, isOpen, errors, errorString, close })
 
 onMounted(function () {
     bus.on('openCG', function (data) {
         id.value = data.id;
         current_closure.value = data.closure;
+        clearValues();
     });
 
     const pickerElement = $('#open_cg_range_end');

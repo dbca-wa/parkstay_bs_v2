@@ -273,7 +273,7 @@ const selected_region = ref({
     districts: []
 })
 const oracle_override = ref(false)
-watch(() => region, function (value) {
+watch(() => region.value, function (value) {
     district.value = '';
     if (value) {
         selected_region.value = regions.value.find(r => (r.code == value));

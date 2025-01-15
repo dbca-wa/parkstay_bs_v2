@@ -4,6 +4,7 @@ import json
 import geojson
 import re
 import hashlib
+import uuid
 from six.moves.urllib.parse import urlparse
 from wsgiref.util import FileWrapper
 from django.db import connection, transaction
@@ -40,6 +41,7 @@ from ledger_api_client.country_models import Country
 #from ledger.payments.models import Invoice
 from parkstay import doctopdf
 from parkstay import utils
+from parkstay.image_utils import get_image_content_file
 from parkstay import property_cache 
 from parkstay import models
 from parkstay.helpers import can_view_campground
@@ -602,8 +604,7 @@ class CampgroundViewSet(viewsets.ModelViewSet):
                 if image_serializers:
                     for image_serializer in image_serializers:
                         image_serializer.initial_data["campground"] = instance.id
-                        image_serializer.initial_data["image"] = ContentFile(base64.b64decode(self.strip_b64_header(image_serializer.initial_data["image"])))
-                        image_serializer.initial_data["image"].name = 'uploaded'
+                        image_serializer.initial_data["image"] = get_image_content_file(image_serializer.initial_data["image"])
 
                     for image_serializer in image_serializers:
                         image_serializer.is_valid(raise_exception=True)
@@ -664,8 +665,7 @@ class CampgroundViewSet(viewsets.ModelViewSet):
                 if image_serializers:
                     for image_serializer in image_serializers:
                         image_serializer.initial_data["campground"] = instance.id
-                        image_serializer.initial_data["image"] = ContentFile(base64.b64decode(self.strip_b64_header(image_serializer.initial_data["image"])))
-                        image_serializer.initial_data["image"].name = 'uploaded'
+                        image_serializer.initial_data["image"] = get_image_content_file(image_serializer.initial_data["image"])
 
                     for image_serializer in image_serializers:
                         image_serializer.is_valid(raise_exception=True)

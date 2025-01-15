@@ -520,7 +520,7 @@ const fetchCampsiteTypes = function () {
     }
 }
 const goBack = function () {
-    router.go(window.history.back());
+    router.go(-1);
 }
 const addFormValidations = function () {
     $(form.value).validate({

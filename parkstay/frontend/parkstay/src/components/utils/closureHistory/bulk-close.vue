@@ -1,17 +1,17 @@
 <template lang="html">
     <div id="bulk-close">
-        <modal okText="Close Campgrounds" @ok="closeCampgrounds()" :force="true">
+        <modal okText="Close Campgrounds" @ok="closeCampgrounds" @cancel="close" :force="true" :isModalOpen="isModalOpen">
             <h4 slot="title">Bulk Close Campgrounds</h4>
             <div class="body">
-                <alert :show="false" type="danger">{{ errorString }}</alert>
+                <alert ref="alertRef" type="danger">{{ errorString }}</alert>
                 <form name="closeForm" class="form-horizontal">
                     <div class="row">
-                        <div class="form-group">
+                    <div class="form-group">
                             <div class="col-md-4">
-                                <label for="Campgrounds">Campgrounds</label>
+                                <label for="bc-campgrounds">Campgrounds</label>
                             </div>
                             <div class="col-md-8">
-                                <select class="form-control" name="campgrounds" placeholder="" multiple
+                                <select id="bc-campgrounds" class="form-control" name="campgrounds" placeholder="" multiple
                                     v-model="selected_campgrounds">
                                     <option v-for="c in campgrounds" :value="c.id">{{ c.name }}</option>
                                 </select>
@@ -26,7 +26,7 @@
                             <div class="col-md-8">
                                 <div class='input-group date' :id='close_cg_range_start'>
                                     <input name="closure_start" v-model="range_start" type='text'
-                                        class="form-control" />
+                                        class="form-control" autocomplete="false" />
                                     <span class="input-group-addon">
                                         <span class="glyphicon glyphicon-calendar"></span>
                                     </span>
@@ -41,7 +41,7 @@
                             </div>
                             <div class="col-md-8">
                                 <div class='input-group date' :id='close_cg_range_end'>
-                                    <input name="closure_end" v-model="range_end" type='text' class="form-control" />
+                                    <input name="closure_end" v-model="range_end" type='text' class="form-control" autocomplete="false" />
                                     <span class="input-group-addon">
                                         <span class="glyphicon glyphicon-calendar"></span>
                                     </span>
@@ -72,7 +72,7 @@ import modal from '../bootstrap-modal.vue'
 import reason from '../reasons.vue'
 import alert from '../alert.vue'
 import { $, getDateTimePicker, dateUtils, api_endpoints, helpers } from '../../../hooks.js'
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { useStore } from "../../../apps/store.js";
 
 const store = useStore()
@@ -82,6 +82,7 @@ const close_cg_range_end = 'close_cg_range_end' + uid
 const close_cg_range_start = 'close_cg_range_start' + uid
 
 const isModalOpen = ref(false)
+const alertRef = ref(null)
 const closeEndPicker = ref(null)
 const closeStartPicker = ref(null)
 const reasonValue = ref('')
@@ -103,14 +104,10 @@ const emits = defineEmits(['close'])
 
 const close = function () {
     emits('close')
-    range_start.value = "";
-    range_end.value = "";
-    selected_campgrounds.value = [];
-    reasonValue.value = "";
-    closeStartPicker.value.clear();
-    closeEndPicker.value.clear();
+    clearValues()
     isModalOpen.value = false;
 }
+
 const events = function () {
     const closeStartPickerElement = $('#' + close_cg_range_start)
     const closeEndPickerElement = $('#' + close_cg_range_end);
@@ -162,6 +159,7 @@ const initSelectTwo = function () {
 const closeCampgrounds = function () {
 
     if (form.value.valid() && selected_campgrounds.value.length > 0) {
+        alertRef.value.onShow(false)
         let data = {
             range_start: range_start.value,
             range_end: range_end.value,
@@ -196,6 +194,9 @@ const closeCampgrounds = function () {
                 close();
             }
         });
+    } else {
+        errorString.value = "Please, fill in all the fields in the form"
+        alertRef.value.onShow(true)
     }
 
 }
@@ -242,9 +243,24 @@ const addFormValidations = function () {
     });
 }
 
+const clearValues = () => {
+    range_start.value = "";
+    range_end.value = "";
+    selected_campgrounds.value = [];
+    reasonValue.value = "";
+    closeStartPicker.value.clear();
+    closeEndPicker.value.clear();
+}
+
+watch(()=> isModalOpen.value, (val) => {
+    if(val) {
+        clearValues()
+    }
+})
+
 defineExpose({ isModalOpen, initSelectTwo })
 
-onMounted(function () {
+onMounted(() => {
     form.value = $(document.forms.closeForm);
     events();
 })

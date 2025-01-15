@@ -109,7 +109,7 @@ const isModalOpen = computed(function () {
     return isOpen.value;
 })
 
-watch(() => reason, (value) => {
+watch(() => reason.value, (value) => {
     formdata.value.closure_reason = value;
 })
 

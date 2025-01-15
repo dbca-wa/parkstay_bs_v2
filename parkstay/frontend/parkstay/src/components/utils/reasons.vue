@@ -8,7 +8,7 @@
                 <select v-if="!reasons.length > 0" class="form-control form-select">
                     <option value="">Loading...</option>
                 </select>
-                <select v-else name="open_reason" :value="value" @change="emit('input', $event.target.value)"
+                <select v-else name="open_reason" v-model="model"
                     class="form-control form-select">
                     <option value=""></option>
                     <option v-for="reason in reasons" :value="reason.id">{{ reason.text }}</option>
@@ -28,14 +28,12 @@ const props = defineProps({
     type: {
         required: true
     },
-    value: {
-    },
     large: {
         default: false
     }
 })
 
-const emit = defineEmits(['input'])
+const model = defineModel()
 
 const reasons = ref([])
 

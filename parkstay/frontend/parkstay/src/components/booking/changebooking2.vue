@@ -358,10 +358,10 @@ const onlineCampgrounds = computed(() => {
 })
 const campgrounds = computed(() => store.getters.campgrounds)
 
-watch(() => selected_campsite, function () {
+watch(() => selected_campsite.value, function () {
     updatePrices();
 })
-watch(() => selected_arrival, function () {
+watch(() => selected_arrival.value, function () {
     if (booking.value.arrival) {
         $.each(stayHistory.value, function (i, his) {
             const interval = {
@@ -386,14 +386,14 @@ watch(() => selected_arrival, function () {
     addEventListeners();
     updatePrices();
 })
-watch(() => selected_departure, function () {
+watch(() => selected_departure.value, function () {
     if (initialised.value) {
     }
     fetchSites();
     initSelectTwo();
     updatePrices();
 })
-watch(() => booking_type, function () {
+watch(() => booking_type.value, function () {
     //vm.fetchSites();
 })
 

@@ -343,7 +343,7 @@ const fetchCampsiteClasses = function () {
     })
 }
 const goBack = function () {
-    router.go(window.history.back());
+    router.go(-1);
 }
 const addCampsite = function () {
     sendData.value(api_endpoints.campsites, 'POST')

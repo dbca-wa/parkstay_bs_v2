@@ -140,12 +140,11 @@ onUnmounted(() => {
 const ok = function () {
     emit('ok');
     if (props.closeWhenOK) {
-        // this.show = false;
+        show.value = false;
     }
 }
 const cancel = function () {
     emit('cancel');
-    // this.$parent.close();
 }
 const clickMask = function () {
     if (!props.force) {

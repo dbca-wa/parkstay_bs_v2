@@ -6,7 +6,7 @@
                     <alert v-model:show="showUpdate" type="success" :duration="7000">
                         <p>Campground successfully updated</p>
                     </alert>
-                    <alert v-model:show="showError" type="danger">
+                    <alert v-model:show="showError" type="danger" :dismissable="true">
                         <p>{{ errorString }}</p>
                     </alert>
                     <div class="row">
@@ -204,7 +204,7 @@
                                     <div class="row">
                                         <div class="col-sm-12">
                                             <div class="form-group pull-right">
-                                                <a href="#" v-if="createCampground" class="btn btn-primary"
+                                                <a href="#" v-if="createCampground" class="btn btn-primary me-2"
                                                     @click.prevent="create">Create Campground</a>
                                                 <a href="#" v-else class="btn btn-primary"
                                                     @click.prevent="update">Update Campground</a>
@@ -251,7 +251,7 @@ const store = useStore()
 const props = defineProps({
     createCampground: { type: Boolean, default: true },
     priceSet: {
-        type: Array, 
+        type: Array,
         default: () => [{
             'val': 0,
             name: 'Campground level'
@@ -322,7 +322,7 @@ watch(() => campground.value, function () {
 }, { deep: true })
 
 const goBack = function () {
-    router.go(window.history.back());
+    router.go(-1);
 }
 const validateForm = function () {
     var isValid = validateEditor($('#editor'));
@@ -406,11 +406,8 @@ const sendData = function (url, method) {
         },
         error: function (resp) {
             isLoading.value = false
-            store.dispatch("updateAlert", {
-                visible: true,
-                type: "danger",
-                message: helpers.apiError(resp)
-            });
+            errorString.value = helpers.apiError(resp)
+            errors.value = true
         }
     });
 }

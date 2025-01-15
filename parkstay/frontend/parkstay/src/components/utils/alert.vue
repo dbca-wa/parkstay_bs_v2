@@ -1,71 +1,80 @@
 <template>
-  <div
-    v-show="show"
-    :class="{
-      'alert':      true,
-      'alert-success':(type == 'success'),
-      'alert-warning':(type == 'warning'),
-      'alert-info': (type == 'info'),
-      'alert-danger':   (type == 'danger'),
-      'top':            (placement === 'top'),
-      'top-right':  (placement === 'top-right')
-    }"
-    transition="fade"
-    :style="{width:width}"
-    role="alert">
-    <button v-show="dismissable" type="button" class="close"
-      @click="show = false">
-      <span>&times;</span>
-    </button>
+  <div v-show="showError" :class="{
+    'alert': true,
+    'alert-success': (type == 'success'),
+    'alert-warning': (type == 'warning'),
+    'alert-info': (type == 'info'),
+    'alert-danger': (type == 'danger'),
+    'top': (placement === 'top'),
+    'top-right': (placement === 'top-right')
+  }" transition="fade" :style="{ width: width }" role="alert">
+    <button v-show="dismissable" type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"@click="showError = false"></button>
     <slot></slot>
   </div>
 </template>
 
 <script setup>
-import { watch } from 'vue'
+import { ref, watch } from 'vue'
 const props = defineProps({
-    type: {
-      type: String
-    },
-    dismissable: {
-      type: Boolean,
-      default: false
-    },
-    show: {
-      type: Boolean,
-      default: false,
-    },
-    duration: {
-      type: Number,
-      default: 0
-    },
-    width: {
-      type: String
-    },
-    placement: {
-      type: String
-    }
-  })
+  type: {
+    type: String
+  },
+  dismissable: {
+    type: Boolean,
+    default: false
+  },
+  show: {
+    type: Boolean,
+    default: false,
+  },
+  duration: {
+    type: Number,
+    default: 0
+  },
+  width: {
+    type: String
+  },
+  placement: {
+    type: String
+  }
+})
 
-  watch(
-    () => props.show,
-    (val) => {
-      if (val && Boolean(props.duration)) {
-        setTimeout(() => { props.show = false }, props.duration)
-      }
-    }
-  )
+const showError = ref(props.show)
+
+const onShow = (value) => {
+  showError.value = value === true
+}
+
+const afterShow = (val) => {
+  if (val && Boolean(props.duration)) {
+    setTimeout(() => { showError.value = false }, props.duration)
+  }
+}
+
+defineExpose({ onShow })
+
+watch(
+  () => props.show,
+  (val) => {showError.value = val}
+)
+
+watch(
+  () => showError.value,
+  afterShow
+)
 </script>
 
 <style>
 .fade-transition {
   transition: opacity .3s ease;
 }
+
 .fade-enter,
 .fade-leave {
   height: 0;
   opacity: 0;
 }
+
 .alert.top {
   position: fixed;
   top: 30px;
@@ -74,6 +83,7 @@ const props = defineProps({
   right: 0;
   z-index: 1050;
 }
+
 .alert.top-right {
   position: fixed;
   top: 30px;

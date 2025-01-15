@@ -211,7 +211,7 @@ const init = function () {
     }
 }
 const goBack = function () {
-    router.go(window.history.back());
+    router.go(-1);
 }
 const loadFeatures = function () {
     var url = api_endpoints.features;
@@ -271,19 +271,18 @@ const sendData = function (url, method) {
         headers: { 'X-CSRFToken': helpers.getCookie('csrftoken') },
         method: method,
         data: JSON.stringify(data),
-        success: function (data) {
+        success: async function (data) {
             if (method == 'POST') {
-                router.push({
+                isLoading.value = false;
+                await router.push({
                     name: 'campsite-type-detail',
                     params: {
                         campsite_type_id: data.id
                     }
-                }, function () {
-                    init();
                 });
+                router.go(0)
             }
             else {
-                campsite.value = data;
                 setTimeout(function () {
                     isLoading.value = false;
                 }, 500);

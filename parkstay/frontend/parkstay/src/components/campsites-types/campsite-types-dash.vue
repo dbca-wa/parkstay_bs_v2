@@ -1,8 +1,6 @@
 <template lang="html">
     <div id="campsite-type-dash">
         <div class="card p-3" id="applications">
-
-
             <base-panel-heading title="Campsite Types">
                 <router-link :to="{ name: 'add-campsite-type' }" style="margin-top: 20px;"
                     class="btn btn-primary table_btn">Add Campsite Type</router-link>
@@ -130,7 +128,7 @@ const dt_options = ref({
     ]
 })
 
-watch(() => selected_status, (value) => {
+watch(() => selected_status.value, (value) => {
     if (value) {
         campsite_type_table.value.vmDataTable.ajax.reload();
     }
@@ -147,7 +145,7 @@ const deleteCampsiteTypeRecord = function (id) {
     });
 }
 const goBack = function () {
-    router.go(window.history.back());
+    router.go(-1);
 }
 const attachTableEventListeners = function () {
     campsite_type_table.value.vmDataTable.on('click', '.detailRoute', function (e) {

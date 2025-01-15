@@ -35,7 +35,7 @@ const updateContent = function (content) {
     emit('input', content);
 }
 
-defineExpose({disabled, updateContent, editor_id})
+defineExpose({ disabled, updateContent, editor_id })
 
 onMounted(function () {
     editor = new Editor('#' + editor_id, {

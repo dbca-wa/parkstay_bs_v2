@@ -154,7 +154,7 @@ const requireDetails = computed(function () {
     return props.priceHistory.closure_reason === '1';
 })
 
-watch(() => selected_rate, function (value) {
+watch(() => selected_rate.value, function (value) {
     if (value != '') {
         $.each(rates.value, function (i, rate) {
             if (rate.id == value) {

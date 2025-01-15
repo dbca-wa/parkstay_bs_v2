@@ -617,14 +617,14 @@ const isDisabled = computed(function () {
     });
 })
 
-watch(() => selected_campsite, function (value) {
+watch(() => selected_campsite.value, function (value) {
     updatePrices();
 })
-watch(() => selected_campsite_class, function (value) {
+watch(() => selected_campsite_class.value, function (value) {
     selected_campsite.value = booking.value.campsite_classes[value];
     updatePrices();
 })
-watch(() => selected_arrival, function (value) {
+watch(() => selected_arrival.value, function (value) {
     if (booking.value.arrival) {
         $.each(stayHistory.value, function (i, his) {
             const interval = {
@@ -645,11 +645,11 @@ watch(() => selected_arrival, function (value) {
     fetchSites();
     updatePrices();
 })
-watch(() => selected_departure, function (value) {
+watch(() => selected_departure.value, function (value) {
     fetchSites();
     updatePrices();
 })
-watch(() => booking_type, function (value) {
+watch(() => booking_type.value, function (value) {
     fetchSites();
 })
 
