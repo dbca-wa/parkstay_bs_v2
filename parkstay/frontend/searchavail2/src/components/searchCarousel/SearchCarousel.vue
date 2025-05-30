@@ -35,7 +35,7 @@
                                         </div>
                                         <div class='carousel-slide-card-notavailabile'
                                             v-if="!!!campground.filters_match">
-                                            Filter does not match
+                                            Does not match filters
                                         </div>
                                         <div v-else-if="campground.campground_type == 0">
                                             <div v-if="booking_arrival_days > campground.max_advance_booking && permission_to_make_advanced_booking == false"
@@ -83,11 +83,11 @@
                                             }"
                                             style="width:100%;"
                                             v-bind:href="parkstayUrl + '/search-availability/campground/?site_id=' + campground.id + '&' + bookingParam"
-                                            target="_self">See availability</a>
+                                            target="_self">{{!!!campground.filters_match ? 'More information' : 'See availability' }}</a>
                                         <a v-else-if="campground.campground_type == 1 || campground.campground_type == 4"
                                             :class="{'button':true, 'formButton': !!campground.filters_match,'formButton5': !!!campground.filters_match}" style="width:100%;"
                                             v-bind:href="parkstayUrl + '/search-availability/campground/?site_id=' + campground.id + '&' + bookingParam"
-                                            target="_self">More Information</a>
+                                            target="_self">More information</a>
                                         <a v-else :class="{'button':true, 'formButton2': !!campground.filters_match,'formButton5': !!!campground.filters_match}"
                                             v-bind:href="parkstayUrl + '/search-availability/campground/?site_id=' + campground.id + '&' + bookingParam"
                                             style="width:100%;" target="_self">More information<i

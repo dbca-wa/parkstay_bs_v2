@@ -29,14 +29,14 @@
           </div>
           <div class="col-md-4">
             <div class="form-group">
-              <label for="">Region</label>
+              <label for="">Park</label>
               <select v-show="isLoading" class="form-control" name="">
                 <option value="">Loading...</option>
               </select>
-              <select ref="regionSelector" v-if="!isLoading" class="form-control" v-model="filterRegion"
-                id="filterRegion">
+              <select ref="parkSelector" v-if="!isLoading" class="form-control" v-model="filterPark"
+                id="filterPark">
                 <option value="All">All</option>
-                <option v-for="region in regions" :value="region.id">{{ region.name }}</option>
+                <option v-for="park in parks" :value="park.id">{{ park.name }}</option>
               </select>
             </div>
           </div>
@@ -119,6 +119,7 @@ const store = useStore()
 const exportingCSV = ref(false)
 const campgroundSelector = ref(null)
 const regionSelector = ref(null)
+const parkSelector = ref(null)
 const bookings_table = ref(null)
 const changebooking = ref(null)
 const bookingHistory = ref(null)
@@ -143,6 +144,9 @@ const dtOptions = ref({
       }
       if (filterRegion.value != "All") {
         d.region = filterRegion.value;
+      }
+      if (filterPark.value != "All") {
+        d.park = filterPark.value;
       }
       d.canceled = filterCanceled.value;
       d.refund_status = filterRefundStatus.value;
@@ -238,6 +242,14 @@ const dtOptions = ref({
       },
     },
     {
+      data: "customer_account_phone",
+      orderable: false,
+      searchable: false,
+      mRender: function (data, type, full) {
+        return data;
+      },
+    },
+    {
       data: "arrival",
       orderable: false,
       searchable: false,
@@ -296,11 +308,14 @@ const dtOptions = ref({
       orderable: false,
       searchable: false,
       mRender: function (data, type, full) {
-        if (data === "Canceled" && full.cancellation_reason != null) {
-          let val = helpers.dtPopover(full.cancellation_reason);
-          return `<span>${data}</span><br/><br/>${val}`;
+        if (data === "Canceled" ) {
+          //   let val = helpers.dtPopover(full.cancellation_reason);
+          return "";
         }
-        return data;
+        const isPaid = data === 'Paid';
+        const textClass  = isPaid ? 'text-success' : 'text-warning';
+        const iconClass = isPaid ? 'bi-check-circle-fill' : 'bi-x-circle-fill';
+        return `<td class="text-center" style="font-size: 0.8em;"><span class="${textClass}"><i class="bi ${iconClass}"></i></span></td>`;
       },
       createdCell: helpers.dtPopoverCellFn
     },
@@ -313,11 +328,12 @@ const dtHeaders = ref([
   "Campground",
   "Campsite",
   "Customer",
+  "Phone Number",
   "Arrival",
   "Departure",
   "Campers",
   "Rego",
-  "Payment status",
+  "Paid",
 ])
 const dateFromPicker = ref(null)
 const dateToPicker = ref(null)
@@ -325,6 +341,7 @@ const loading = ref([])
 const selected_booking = ref(-1)
 const filterCampground = ref("All")
 const filterRegion = ref("All")
+const filterPark = ref("All")
 const filterDateFrom = ref("")
 const filterDateTo = ref("")
 const filterCanceled = ref("False")
@@ -334,6 +351,9 @@ watch(() => filterCampground.value, function () {
   bookings_table.value.vmDataTable.ajax.reload();
 })
 watch(() => filterRegion.value, function () {
+  bookings_table.value.vmDataTable.ajax.reload();
+})
+watch(() => filterPark.value, function () {
   bookings_table.value.vmDataTable.ajax.reload();
 })
 watch(() => filterCanceled.value, function () {
@@ -346,6 +366,7 @@ watch(() => filterRefundStatus.value, function () {
 const isLoading = computed(function () {
   return loading.value.length > 0;
 })
+const parks = computed(function () { return store.getters.parks })
 const regions = computed(function () { return store.getters.regions })
 const campgrounds = computed(function () { return store.getters.campgrounds })
 
@@ -367,6 +388,11 @@ const fetchCampgrounds = function () {
 const fetchRegions = function () {
   if (regions.value.length == 0) {
     store.dispatch("fetchRegions");
+  }
+}
+const fetchParks = function () {
+  if (parks.value.length == 0) {
+    store.dispatch("fetchParks");
   }
 }
 const cancelBooking = function (booking) {
@@ -399,9 +425,9 @@ const addEventListeners = function () {
   const dateToPickerElement = $("#booking-date-to")
   dateToPicker.value = getDateTimePicker(dateToPickerElement, {
     ...datepickerOptions,
-    // restrictions: {
-    //   minDate: dateFromPicker.value.dates.lastPicked
-    // }
+    restrictions: {
+      minDate: dateFromPicker.value.dates.lastPicked
+    }
   }
   );
 
@@ -455,6 +481,20 @@ const addEventListeners = function () {
       filterRegion.value = "All";
     });
 
+  /* Park Selector*/
+  $(parkSelector.value)
+    .select2({
+      theme: "bootstrap"
+    })
+    .on("select2:select", function (e) {
+      var selected = $(e.currentTarget);
+      filterPark.value = selected.val();
+    })
+    .on("select2:unselect", function (e) {
+      var selected = $(e.currentTarget);
+      filterPark.value = "All";
+    });
+
   dateToPickerElement.on("change.td", function (e) {
     const date = dateToPicker.value.dates.lastPicked
     filterDateTo.value = date ? dateUtils.formatDate(date, 'dd/MM/yyyy') : '';
@@ -466,14 +506,20 @@ const addEventListeners = function () {
   dateFromPickerElement.on("change.td", function (e) {
     const date = dateFromPicker.value.dates.lastPicked
     filterDateFrom.value = date ? dateUtils.formatDate(date, 'dd/MM/yyyy') : '';
-    bookings_table.value.vmDataTable.ajax.reload();
-    if (date) {
-      dateToPicker.value.updateOptions({
+    let dateToOptions = {
         restrictions: {
           minDate: date
         }
-      });
-    }
+      }
+    if (date) {
+      const dateTo = dateToPicker.value.dates.lastPicked;
+      if (dateTo && date > dateTo) {
+        dateToPicker.value.dates.setValue(date)
+        filterDateTo.value = dateUtils.formatDate(date, 'dd/MM/yyyy');
+      }
+    } 
+    dateToPicker.value.updateOptions(dateToOptions);
+    bookings_table.value.vmDataTable.ajax.reload();
   })
 
   helpers.namePopover($, bookings_table.value.vmDataTable);
@@ -498,6 +544,7 @@ const printParams = function () {
     departure: filterDateTo.value != null ? filterDateTo.value : "",
     campground: filterCampground.value != "All" ? filterCampground.value : "",
     region: filterRegion.value != "All" ? filterRegion.value : "",
+    park: filterPark.value != "All" ? filterPark.value : "",
     canceled: filterCanceled.value,
     "search[value]": bookings_table.value.vmDataTable.search()
   };
@@ -514,29 +561,33 @@ const print = function () {
     res => {
       var data = res.results;
 
-      var fields = ["Created"];
-      //var fields = [...dtHeaders.value];
-      var fields = [...fields, ...dtHeaders.value];
-      fields.splice(fields.length - 1, 1);
-      fields = [
-        ...fields,
+      let fields = [
+        "Created",
+        "Campground name",
+        "Region",
+        "Customer",
+        "Email",
+        "Phone Number",
+        "Booking number",
+        "Campsite",
+        "Status",
+        "Booking Total",
+        "Booking Override Price",
+        "Override Reason",
+        "Amount Paid",
+        "Arrival",
+        "Departure",
         "Adults",
-        "Concession",
+        "Concessions",
         "Children",
         "Infants",
         "Regos",
-        "Canceled",
-        "Cancelation Reason",
-        "Cancelation Date",
-        "Canceled By"
+        "Cancelled",
+        "Cancellation Reason",
+        "Cancellation Date",
+        "Cancelled By",
+        "Booking Type"
       ];
-      fields.splice(4, 0, "Email");
-      fields.splice(5, 0, "Phone");
-      fields.splice(9, 0, "Booking Total");
-      fields.splice(10, 0, "Booking Override Price");
-      fields.splice(11, 0, "Override Reason");
-      fields.splice(12, 0, "Amount Paid");
-      fields.splice(24, 0, "Booking Type");
 
       var booking_types = {
         0: "Reception booking",
@@ -694,11 +745,11 @@ const print = function () {
         filterCampground.value == "All"
           ? "All Campgrounds "
           : $("#filterCampground")[0].selectedOptions[0].text;
-      const _filterRegion =
+      const _filterPark =
         filterCampground.value == "All"
-          ? filterRegion.value == "All"
-            ? "All Regions"
-            : $("#filterRegion")[0].selectedOptions[0].text
+          ? filterPark.value == "All"
+            ? "All Parks"
+            : $("#filterPark")[0].selectedOptions[0].text
           : "";
       const filterDates = filterDateFrom.value
         ? filterDateTo.value
@@ -706,7 +757,7 @@ const print = function () {
           : "From " + filterDateFrom.value
         : filterDateTo.value ? " To " + filterDateTo.value : "";
       const filename =
-        _filterCampground + "_" + _filterRegion + "_" + filterDates + ".csv";
+        _filterCampground + "_" + _filterPark + "_" + filterDates + ".csv";
       if (window.navigator.msSaveOrOpenBlob)
         // IE10+
         window.navigator.msSaveOrOpenBlob(file, filename);
@@ -742,6 +793,7 @@ onMounted(function () {
   fetchCampgrounds();
   fetchRegions();
   addEventListeners();
+  fetchParks();
 })
 
 onBeforeMount(() => {

@@ -3424,6 +3424,7 @@ class BookingViewSet(viewsets.ModelViewSet):
             departure_date = datetime.strptime(request.GET.get('departure'), '%d/%m/%Y') if request.GET.get('departure') else ''
             campground = request.GET.get('campground')
             region = request.GET.get('region')
+            park = request.GET.get('park')
             canceled = request.GET.get('canceled', None)
             refund_status = request.GET.get('refund_status', None)
             #print("MLINE 2.01", datetime.now().strftime("%d/%m/%Y %H:%M:%S"))
@@ -3455,6 +3456,8 @@ class BookingViewSet(viewsets.ModelViewSet):
                 booking_query &= Q(campground__id=campground)
             if region:
                 booking_query &= Q(campground__park__district__region__id=region)
+            if park:
+                booking_query &= Q(campground__park__id=park)
             if arrival:
                  booking_query &= Q(departure__gt=arrival_date)
             if departure:
