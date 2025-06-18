@@ -155,9 +155,9 @@ export default function (vm) {
 
     vm.streets = new ol.layer.Tile({
         source: new ol.source.WMTS({
-            url: 'https://kmi.dpaw.wa.gov.au/geoserver/gwc/service/wmts',
+            url: 'https://kb.dbca.wa.gov.au/geoserver/gwc/service/wmts',
             format: 'image/png',
-            layer: 'public:mapbox-streets',
+            layer: 'kaartdijin-boodja-public:mapbox-streets-public',
             matrixSet: vm.matrixSet,
             projection: vm.projection,
             tileGrid: tileGrid,
@@ -167,9 +167,9 @@ export default function (vm) {
     vm.tenure = new ol.layer.Tile({
         opacity: 0.6,
         source: new ol.source.WMTS({
-            url: 'https://kmi.dpaw.wa.gov.au/geoserver/gwc/service/wmts',
+            url: 'https://kb.dbca.wa.gov.au/geoserver/gwc/service/wmts',
             format: 'image/png',
-            layer: 'public:dbca_legislated_lands_and_waters',
+            layer: 'kaartdijin-boodja-public:CPT_DBCA_LEGISLATED_TENURE',
             matrixSet: vm.matrixSet,
             projection: vm.projection,
             tileGrid: tileGrid,
