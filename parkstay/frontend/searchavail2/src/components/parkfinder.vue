@@ -34,7 +34,7 @@
                     <span class="visually-hidden">Loading...</span>
                 </div>
             </div>
-            <div class="row">
+            <div class="row map-container">
                 <div class="small-12 medium-12 large-12 columns search-params" style='display:none'>
                     <div class="row">
                         <div class="small-12 columns">
