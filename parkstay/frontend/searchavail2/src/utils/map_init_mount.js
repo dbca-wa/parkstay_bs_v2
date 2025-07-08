@@ -203,6 +203,7 @@ export default function (vm) {
     });
 
     vm.groundsSource.loadSource = function (onSuccess) {
+        search_avail.showMapLoader();
         // var urlBase = vm.parkstayUrl+'/api/campground_map_filter/?';
         var urlBase = vm.parkstayUrl + '/api/campground_availabilty_view/?';
         var params = { format: 'json' };
@@ -237,6 +238,10 @@ export default function (vm) {
                 vm.updateFilter();
                 vm.buildDistanceArray();
                 // search_avail.focus_map();
+                search_avail.hideMapLoader();
+            },
+            error: function (error) {
+                search_avail.hideMapLoader();
             },
             dataType: 'json',
         });

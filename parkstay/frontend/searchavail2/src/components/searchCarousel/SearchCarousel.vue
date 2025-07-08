@@ -74,7 +74,7 @@
                                                         campground.price_hint
                                                     }} per night</small></i></p>
 
-                                        <a v-if="campground.campground_type == 0 && (booking_arrival_days <= campground.max_advance_booking || permission_to_make_advanced_booking == true)"
+                                        <a v-if="campground.campground_type == 0"
                                             :class="{
                                                 'button': true,
                                                 'formButton1': campgroundAvailablity[campground.id].total_bookable > 0,

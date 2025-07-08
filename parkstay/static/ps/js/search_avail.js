@@ -1806,5 +1806,13 @@ var search_avail = {
     if($("#map-preview-tab").hasClass("active")) {
         document.getElementById('search-filters').scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
-  }
+  },
+  showMapLoader: function () {
+      $('#map-preview').find('.loading-map').show();
+      $('#map-preview').find('.map-container').css('opacity', '0.5');
+  },
+  hideMapLoader: function () {
+      $('#map-preview').find('.loading-map').hide();
+      $('#map-preview').find('.map-container').css('opacity', '1');
+  },
 };
