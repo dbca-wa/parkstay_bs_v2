@@ -1037,7 +1037,7 @@ var search_avail = {
         }
 
     } else {
-
+      
       if (campground_departure_date > campground_release_date) {
         if (search_avail.var.permission_to_make_advanced_booking == true) {
           // permission granted

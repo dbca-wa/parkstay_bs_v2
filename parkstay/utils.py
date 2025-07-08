@@ -288,9 +288,10 @@ def create_booking_by_site(request,sites_qs, start_date, end_date, num_adult=0, 
     ground = {"id": campsite_qs[0].campground.id}     
     sites_qs = booking_availability.get_campsites_for_campground(ground,'all')   
 
-
-    for s in sites_qs:        
-        sites_array.append({'pk': s['id'], 'data': s})
+    for s in sites_qs:  
+        for cs in campsite_qs:
+            if s['id'] == cs.id:        
+                sites_array.append({'pk': s['id'], 'data': s})
 
     num_adult_pool = num_adult
     num_concession_pool = num_concession
@@ -304,10 +305,11 @@ def create_booking_by_site(request,sites_qs, start_date, end_date, num_adult=0, 
     with transaction.atomic():
         # get availability for campsite, error out if booked/closed
         user = overridden_by
-            
+
         availability = booking_availability.get_campsite_availability(campsite_qs[0].campground.id,sites_array, start_date, end_date,user_logged_in, old_booking)
 
         for site_id, dates in availability.items():
+
             if not override_checks:
                 if updating_booking:
                     if not all([v[0] in ['open', 'tooearly'] for k, v in dates.items()]):
@@ -316,6 +318,7 @@ def create_booking_by_site(request,sites_qs, start_date, end_date, num_adult=0, 
                     if not all([v[0] == 'open' for k, v in dates.items()]):
                         raise ValidationError('Campsite(s) unavailable for specified time period.')
             else:
+
                 if not all([v[0] in ['open', 'tooearly', 'closed', 'closed & booked'] for k, v in dates.items()]):
                     raise ValidationError('Campsite(s) unavailable for specified time period.')
 
