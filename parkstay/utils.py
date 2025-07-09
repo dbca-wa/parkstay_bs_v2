@@ -313,14 +313,14 @@ def create_booking_by_site(request,sites_qs, start_date, end_date, num_adult=0, 
             if not override_checks:
                 if updating_booking:
                     if not all([v[0] in ['open', 'tooearly'] for k, v in dates.items()]):
-                        raise ValidationError('Campsite(s) unavailable for specified time period.')
+                        raise ValidationError("Someone hit 'Book now' before you and campsite availability changed after this webpage was loaded. <BR>Reload the page using your browser controls to update availability information.")
                 else:
                     if not all([v[0] == 'open' for k, v in dates.items()]):
-                        raise ValidationError('Campsite(s) unavailable for specified time period.')
+                        raise ValidationError("Someone hit 'Book now' before you and campsite availability changed after this webpage was loaded. <BR>Reload the page using your browser controls to update availability information.")
             else:
 
                 if not all([v[0] in ['open', 'tooearly', 'closed', 'closed & booked'] for k, v in dates.items()]):
-                    raise ValidationError('Campsite(s) unavailable for specified time period.')
+                    raise ValidationError("Someone hit 'Book now' before you and campsite availability changed after this webpage was loaded. <BR>Reload the page using your browser controls to update availability information.")
 
         if not override_checks:
             # Prevent booking if max people passed

@@ -883,7 +883,7 @@ var search_avail = {
     }
   },
   create_booking: function (button_element) {
-    var errortitle = "Error Message";
+    var errortitle = "Something went wrong";
     if (search_avail.var.selecttype == "multiple") {
       if (search_avail.var.multiplesites.length > 0) {
       } else {
