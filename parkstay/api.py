@@ -2880,7 +2880,15 @@ def create_booking(request, *args, **kwargs):
             total_days_departure_old_booking = old_booking_obj.departure - today
             total_days_departure_new_booking = end_date - today
             max_advance_booking = old_booking_obj.campground.max_advance_booking
-            
+            release_date = None
+            release_period = utils.get_release_date_for_campground(old_booking_obj.campground.id)
+            if release_period:
+                release_date = release_period['release_date']                
+                if release_date:
+                    
+                    release_date_difference = release_date - today
+                    max_advance_booking = release_date_difference.days
+
             if old_booking_obj.arrival > today:
                 if old_booking_obj.departure >= today:
                     # if  parkstay_officers is True:
