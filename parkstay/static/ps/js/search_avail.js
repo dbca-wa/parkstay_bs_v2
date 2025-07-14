@@ -1043,7 +1043,7 @@ var search_avail = {
           // permission granted
         } else {
           $("#campsite-availablity-results").html(
-            "<center style='color:red' max_booking='True' >Please choose a shorter departure date.</center>"
+            "<center style='color:red' max_booking='True' >Some or all of your selected dates are not open for booking yet. <BR><BR> Tap/click 'QUIT' below for information about opening dates.</center>"
           );
           return;
         }
