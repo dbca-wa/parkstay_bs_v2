@@ -117,6 +117,14 @@ def create_booking_by_class(request,campground_id, multiplesites_class_totals, s
                     campsite_class=campsite_class_id
                 )
 
+                ground = {"id": campground_id}     
+                sites_qs_bs = booking_availability.get_campsites_for_campground(ground,'all')   
+                sites_array = []
+                for s in sites_qs_bs:  
+                    for cs in sites_qs:
+                        if s['id'] == cs.id:        
+                            sites_array.append({'pk': s['id'], 'data': s})
+
                 row_num_adult = 0
                 row_num_concession = 0
                 row_num_child = 0
@@ -176,7 +184,8 @@ def create_booking_by_class(request,campground_id, multiplesites_class_totals, s
                 if not sites_qs.exists():
                     raise ValidationError('No matching campsites found.')
                 # get availability for sites, filter out the non-clear runs
-                availability = get_campsite_availability(sites_qs, start_date, end_date, user_logged_in,old_booking)
+                #availability = get_campsite_availability(sites_qs, start_date, end_date, user_logged_in,old_booking)
+                availability = booking_availability.get_campsite_availability(campground.id,sites_array, start_date, end_date,user_logged_in, old_booking)
                 excluded_site_ids = set()
                 for site_id, dates in availability.items():
                     if not all([v[0] == 'open' for k, v in dates.items()]):
