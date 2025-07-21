@@ -1202,7 +1202,6 @@ def campsite_availablity_view(request,  *args, **kwargs):
     if request.user.is_authenticated:
            user_logged_in = request.user
 
-
     ongoing_booking = None
     if 'ps_booking' in request.session:
         if Booking.objects.filter(pk=request.session['ps_booking']).count() > 0:

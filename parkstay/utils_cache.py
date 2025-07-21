@@ -209,7 +209,7 @@ def get_campground_release_date():
         #     release_date_obj['release_date'] = release_date_query[0].release_date.strftime('%Y-%m-%d')
         # else:
         #     release_date_obj['release_date'] = None
-        cache.set('CampgroundReleaseDate', json.dumps(release_date_obj),  86400)        
+        cache.set('CampgroundReleaseDate', json.dumps(release_date_obj),  30)        
     else:        
         release_date_obj = json.loads(release_date_obj_data)       
     return release_date_obj
