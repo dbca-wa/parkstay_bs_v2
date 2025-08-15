@@ -1025,7 +1025,7 @@ var search_avail = {
 
     if (search_avail.var.campground_release_date == null || search_avail.var.campground_release_date == 'None') {
 
-        if (search_avail.var.arrival_days >= search_avail.var.max_advance_booking) {
+        if (search_avail.var.arrival_days > search_avail.var.max_advance_booking) {
           if (search_avail.var.permission_to_make_advanced_booking == true) {
             // permission granted
           } else {
