@@ -42,6 +42,7 @@ def build_campground_calender(params):
 
            for c in cg:
                print ("Campground ID "+str(c.id)+"")
+               release_start = None
                data_file = settings.BASE_DIR+"/datasets/"+str(c.id)+"-campground-availablity.json"
                if os.path.isfile(data_file):
                   f = open(data_file, "r")
