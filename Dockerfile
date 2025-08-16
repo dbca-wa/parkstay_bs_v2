@@ -1,5 +1,5 @@
 # Prepare the base environment.
-FROM ubuntu:24.04 as builder_base_parkstay
+FROM ubuntu:24.10 as builder_base_parkstay
 MAINTAINER asi@dbca.wa.gov.au
 ENV DEBIAN_FRONTEND=noninteractive
 ENV TZ=Australia/Perth
