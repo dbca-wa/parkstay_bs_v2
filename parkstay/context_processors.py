@@ -57,6 +57,7 @@ def parkstay_url(request):
         parkstay_permissions = json.loads(parkstay_permissions_cache)
 
     lt = utils.get_ledger_totals()
+    public_site_closure = utils.public_site_closure()
 
     return {
         'EXPLORE_PARKS_SEARCH': '{}'.format(settings.EXPLORE_PARKS_URL),
@@ -86,5 +87,6 @@ def parkstay_url(request):
         'ledger_totals': lt,
         'parkstay_officers' : parkstay_officers,
         'booking_timer' : booking_timer,
-        'checkouthash' : checkouthash
+        'checkouthash' : checkouthash,
+        'public_site_closure' : public_site_closure
     }

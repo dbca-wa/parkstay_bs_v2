@@ -22,6 +22,12 @@
 </script>
 
 <div class="container" style="z-index: 1">
+ {% if public_site_closure.status == 200 and parkstay_officers is False %}
+    {% include "ps/system_closure_message.html" %}
+ {% else %}
+
+
+
   {% if in_progress_booking_id %}
 
   <div class="row">
@@ -443,5 +449,7 @@
     //	import Map from 'ol/Map';
     //	console.log(Map);
   </script>
+  {% endif %}
+
   {% endblock %}
 </div>

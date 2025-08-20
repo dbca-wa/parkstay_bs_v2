@@ -222,6 +222,7 @@ def remove_custom_content_page(slug):
     """
     cache_key = f'page_content_{slug}'
     cache.delete(cache_key)
+
 def set_custom_content_page(page):
     """
     Set the custom content page in cache.
@@ -238,3 +239,32 @@ def set_custom_content_page(page):
     }
     cache.set(cache_key, item, 86400 * 30)  # Cache for 30 days
     return item
+
+
+def public_site_closure():
+   public_site_closure = []
+   system_closure_dumped_data = cache.get('utils_cache.public_site_closure()')
+   system_closure_dumped_data = None
+   if system_closure_dumped_data is None:       
+        # nowtime = datetime.now()    
+        # psc = PublicSiteClosure.objects.filter(active=True,closure_start__lte=nowtime, closure_end__gt=nowtime)
+        publicsiteclosure_object = parkstay_models.PublicSiteClosure.objects.filter(active=True).order_by('closure_start')
+        for psc in publicsiteclosure_object:
+            row = {}
+            row['id'] = str(psc.id)
+            row['message'] = psc.message
+            row['notice_type'] = psc.notice_type
+            row['active'] = psc.active
+            row['closure_start'] = psc.closure_start.astimezone().strftime('%Y-%m-%d %H:%M:%S')
+            row['closure_end'] = psc.closure_end.astimezone().strftime('%Y-%m-%d %H:%M:%S')
+            public_site_closure.append(row)
+    
+        cache.set('utils_cache.public_site_closure()', json.dumps(public_site_closure),  86400)
+   else:
+       public_site_closure = json.loads(system_closure_dumped_data)
+   return public_site_closure
+
+
+# def public_site_closure():
+
+#     print (psc)

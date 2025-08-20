@@ -2773,6 +2773,23 @@ def create_booking(request, *args, **kwargs):
     context_p = context_processors.parkstay_url(request)
     change_booking_id = request.POST.get('change_booking_id',None)
     date_override = request.POST.get('date_override',"false")
+    public_site_closure = utils.public_site_closure()    
+    if public_site_closure["status"] == 200:        
+        if request.user.is_authenticated:            
+            parkstay_officers = ledger_api_utils.user_in_system_group(request.session['user_obj']['user_id'],'Parkstay Officers')
+            if parkstay_officers is True:                
+                pass
+            else:
+                return HttpResponse(geojson.dumps({
+                    'status': 'error',
+                    'msg': 'The system is currently closed for bookings.',            
+                }), status=400, content_type='application/json')
+        else:                         
+            return HttpResponse(geojson.dumps({
+                'status': 'error',
+                'msg': 'The system is currently closed for bookings.',            
+            }), status=400, content_type='application/json')
+
 
     try:
         inprogress_booking = utils.get_session_booking(request.session)

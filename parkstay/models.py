@@ -2466,3 +2466,39 @@ class Page(models.Model):
         utils_cache.set_custom_content_page(self)
         if remove_old_cache:
             utils_cache.remove_custom_content_page(old_slug)
+
+
+
+class PublicSiteClosure(models.Model):
+    NOTICE_TYPE_CHOICES = (
+        (0, 'Red Warning'),
+        (1, 'Orange Warning'),
+        (2, 'Blue Warning') ,
+        (3, 'Green Warning')   
+        )
+
+    notice_type = models.IntegerField(choices=NOTICE_TYPE_CHOICES,default=0)
+    message = models.TextField(null=True, blank=True, default='')    
+    active = models.BooleanField(default=True)
+    closure_start = models.DateTimeField()
+    closure_end = models.DateTimeField()
+    created = models.DateTimeField(default=timezone.now)
+
+
+    def save(self, *args, **kwargs):
+
+        if PublicSiteClosure.objects.filter(closure_start__lte=self.closure_start,closure_end__gt=self.closure_start).exclude(id=self.id).count() > 0:
+            if self.closure_start:
+                raise ValidationError('Closure Start period already exists {}'.format(self.closure_start.strftime("%Y-%m-%d")))            
+            else:
+                raise ValidationError('Closure Start period already exists (None)')    
+
+        if PublicSiteClosure.objects.filter(closure_start__lte=self.closure_end,closure_end__gt=self.closure_end).exclude(id=self.id).count() > 0:
+            if self.closure_end:
+                raise ValidationError('Closure End period already exists {}'.format(self.closure_end.strftime("%Y-%m-%d")))         
+            else:
+                raise ValidationError('Closure End period already exists (None)')                    
+
+        super(PublicSiteClosure, self).save(*args, **kwargs)
+        cache.delete('utils_cache.public_site_closure()')
+        self.full_clean()

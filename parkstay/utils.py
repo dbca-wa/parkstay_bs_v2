@@ -19,7 +19,7 @@ from ledger_api_client.ledger_models import EmailUserRO as EmailUser
 from ledger_api_client.utils import oracle_parser, update_payments
 from ledger_api_client.utils import create_basket_session, create_checkout_session, place_order_submission, use_existing_basket, use_existing_basket_from_invoice, calculate_excl_gst
 from parkstay import models as parkstay_models
-from parkstay.models import (Campground, Campsite, CampsiteRate, CampsiteBooking, Booking, BookingInvoice, CampsiteBookingRange, CampgroundBookingRange, CampgroundStayHistory, ParkEntryRate, BookingVehicleRego, CampsiteBookingLegacy)
+from parkstay.models import (Campground, Campsite, CampsiteRate, CampsiteBooking, Booking, BookingInvoice, CampsiteBookingRange, CampgroundBookingRange, CampgroundStayHistory, ParkEntryRate, BookingVehicleRego, CampsiteBookingLegacy, PublicSiteClosure)
 from parkstay.serialisers import BookingRegoSerializer, ParkEntryRateSerializer, RateSerializer
 from parkstay.emails import send_booking_invoice, send_booking_confirmation
 from parkstay.exceptions import BindBookingException
@@ -2042,3 +2042,20 @@ def get_release_date_for_campground(campground_id):
                         release_period["booking_open_date"] = rd_booking_open_date
 
     return release_period
+
+
+def public_site_closure():
+    nowtime = datetime.now()    
+    # psc = PublicSiteClosure.objects.filter(active=True,closure_start__lte=nowtime, closure_end__gt=nowtime)
+    # print (psc)
+    current_closure = {"status": 404, "response":"Mesasge no closures", "closure_details": {}}
+    from parkstay import utils_cache
+    psc = utils_cache.public_site_closure()
+    for p in psc:        
+        closure_start = datetime.strptime(p["closure_start"], '%Y-%m-%d %H:%M:%S')  
+        closure_end = datetime.strptime(p["closure_end"], '%Y-%m-%d %H:%M:%S') 
+        if closure_start <= nowtime:            
+            if closure_end > nowtime:                
+                current_closure = p
+                current_closure = {"status": 200, "response": "Mesasge no closures", "closure_details": p}
+    return current_closure

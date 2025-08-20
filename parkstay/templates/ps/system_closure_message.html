@@ -1,0 +1,6 @@
+{% if public_site_closure.notice_type == 0 %}
+{% endif %}
+
+<div class="alert {% if public_site_closure.closure_details.notice_type == 0 %}alert-danger{% elif public_site_closure.closure_details.notice_type == 1 %}alert-warning{% elif public_site_closure.closure_details.notice_type == 2 %}alert-info{% elif public_site_closure.closure_details.notice_type == 3 %}alert-success{% endif %}">
+    {{ public_site_closure.closure_details.message|safe }}
+</div>

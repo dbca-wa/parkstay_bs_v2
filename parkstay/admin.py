@@ -489,6 +489,15 @@ class AvailablityCacheAdmin(admin.ModelAdmin):
       list_display = ('date','campground','stale')
       list_filter = ('date','campground','stale')
 
+
+@admin.register(models.PublicSiteClosure)
+class PublicSiteClosureAdmin(admin.ModelAdmin):
+      form = NoticeForm
+
+      list_display = ('id','message','notice_type','active','closure_start','closure_end','created')
+      list_filter = ('active',)
+      readonly_fields = ['created',]
+
 admin.site.register(models.Rate)
 admin.site.register(models.Region)
 admin.site.register(models.District)
