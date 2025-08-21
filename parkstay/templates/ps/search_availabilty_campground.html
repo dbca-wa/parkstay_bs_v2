@@ -18,8 +18,9 @@
 
 <!-- https://cssbuttoncreator.com/ -->
 <div class="container" style='z-index:1'>
+      
 
- {% if public_site_closure.status == 200 and parkstay_officers is False %}
+{% if public_site_closure.status == 200 and parkstay_officers is not True %}
     {% include "ps/system_closure_message.html" %}
  {% else %}
 

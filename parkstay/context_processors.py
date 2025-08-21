@@ -38,7 +38,7 @@ def parkstay_url(request):
     parkstay_officers = None
     if is_authenticated is True:
         parkstay_officers = ledger_api_utils.user_in_system_group(request.session['user_obj']['user_id'],'Parkstay Officers')
-
+        
     parkstay_permissions = {'special_permissions': False}
     if parkstay_permissions_cache is None:
         for pg in models.ParkstayPermission.PERMISSION_GROUP:
