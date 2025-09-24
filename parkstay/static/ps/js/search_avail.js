@@ -403,9 +403,14 @@ var search_avail = {
     // diffDays = diffDays - 1;
     return diffDays;
   },
-  calculate_arrival_days: function (start) {
+  calculate_arrival_days_broken: function (start) {
+    alert(start);
     var date_now = Date.now();
+    alert(date_now);
     var date_arrival = Date.parse(start);
+    date_now.setHours(0, 0, 0, 0);
+    date_arrival.setHours(0, 0, 0, 0);
+
     oneDay = 24 * 60 * 60 * 1000;
     diffDays = Math.round(
       Math.abs((moment(date_now) - moment(date_arrival)) / oneDay)
@@ -413,6 +418,23 @@ var search_avail = {
     search_avail.var.arrival_days = diffDays;
     return diffDays;
   },
+
+ calculate_arrival_days: function(targetDateString) {
+  const today = new Date();
+  const targetDate = new Date(targetDateString);
+
+  // Set times to midnight to avoid issues with time differences within the day
+  today.setHours(0, 0, 0, 0);
+  targetDate.setHours(0, 0, 0, 0);
+
+  const timeDifference = targetDate.getTime() - today.getTime();
+  const oneDayInMilliseconds = 1000 * 60 * 60 * 24;
+  const daysUntil = Math.ceil(timeDifference / oneDayInMilliseconds);
+  search_avail.var.arrival_days = daysUntil;
+  return daysUntil;
+},
+
+
   select_place_id: function (place_id) {
     var found = false;
     for (let i = 0; i < search_avail.var.places.length; i++) {
