@@ -419,7 +419,7 @@ var search_avail = {
     return diffDays;
   },
 
- calculate_arrival_days: function(targetDateString) {
+ calculate_arrival_days_timezone_broken: function(targetDateString) {
   const today = new Date();
   const targetDate = new Date(targetDateString);
 
@@ -430,6 +430,25 @@ var search_avail = {
   const timeDifference = targetDate.getTime() - today.getTime();
   const oneDayInMilliseconds = 1000 * 60 * 60 * 24;
   const daysUntil = Math.ceil(timeDifference / oneDayInMilliseconds);
+  search_avail.var.arrival_days = daysUntil;
+  return daysUntil;
+},
+calculate_arrival_days: function(targetDateString) {
+  const timezoneOffsetHours = 8; // +08:00
+  const timezoneOffsetMs = timezoneOffsetHours * 60 * 60 * 1000;
+
+  const nowUtc = new Date();
+  const today = new Date(nowUtc.getTime() + timezoneOffsetMs);
+  today.setUTCHours(0, 0, 0, 0); // Set to midnight in +08:00
+
+  const targetUtc = new Date(targetDateString);
+  const targetDate = new Date(targetUtc.getTime() + timezoneOffsetMs);
+  targetDate.setUTCHours(0, 0, 0, 0); // Set to midnight in +08:00
+
+  const timeDifference = targetDate.getTime() - today.getTime();
+  const oneDayInMilliseconds = 1000 * 60 * 60 * 24;
+  const daysUntil = Math.ceil(timeDifference / oneDayInMilliseconds);
+
   search_avail.var.arrival_days = daysUntil;
   return daysUntil;
 },
