@@ -364,7 +364,7 @@ var search_avail = {
       checkout_date_moment.format("YYYY/MM/DD")
     );
   },
-  select_dates: function (start, end) {
+  select_dates: async function (start, end) {
     $("#when-date-range #when-dates").html(
       "<b>Arrive:</b> " +
         start.format("ddd D MMM YY") +
@@ -380,7 +380,7 @@ var search_avail = {
     search_avail.var.camping_period["checkout"] = fEndDate;
 
     var whennights = search_avail.calculate_nights(fStartDate, fEndDate);
-    var arrival_days = search_avail.calculate_arrival_days(fStartDate);
+    var arrival_days = await search_avail.calculate_arrival_days(fStartDate);
 
     $("#when-nights").html(whennights);
     if (search_avail.var.page == "campground") {
@@ -433,7 +433,28 @@ var search_avail = {
   search_avail.var.arrival_days = daysUntil;
   return daysUntil;
 },
-calculate_arrival_days: function(targetDateString) {
+get_date_diff_in_days: async function(targetDateString) {
+    return $.ajax({
+      url: "/api/get_date_diff_in_days?arrival_date=" +targetDateString,
+      cache: false,
+      error: function (request, status, error) {
+        console.log("Error calculating date difference");
+      },
+      success: function (data) {
+        search_avail.var.arrival_days = data.days_difference;
+      },
+    });
+},
+calculate_arrival_days: async function(targetDateString) {
+  var arrival_date = null;
+    await search_avail.get_date_diff_in_days(targetDateString);
+    // console.log("---"+search_avail.var.arrival_days+"---");
+    arrival_date = search_avail.var.arrival_days;
+    return arrival_date;
+},
+
+
+calculate_arrival_days_old_07112025: function(targetDateString) {
   const timezoneOffsetHours = 8; // +08:00
   const timezoneOffsetMs = timezoneOffsetHours * 60 * 60 * 1000;
 
@@ -1065,8 +1086,7 @@ calculate_arrival_days: function(targetDateString) {
     var campground_departure_date = new Date(search_avail.var.camping_period["checkout"]);
 
     if (search_avail.var.campground_release_date == null || search_avail.var.campground_release_date == 'None') {
-
-        if (search_avail.var.arrival_days > search_avail.var.max_advance_booking) {
+        if (search_avail.var.arrival_days >= search_avail.var.max_advance_booking) {
           if (search_avail.var.permission_to_make_advanced_booking == true) {
             // permission granted
           } else {

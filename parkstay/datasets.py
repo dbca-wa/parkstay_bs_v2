@@ -173,7 +173,9 @@ def build_campground_calender(params):
                                         campground_calender['campsites'][str(cs.id)][nextday_string] = status[3]                         
                         else:                            
                             # 180 days plus 14 days booking period
-                            if day > 193:
+                            # if day > 193:
+                            # 180 days plus 28 days booking period
+                            if day > 207:                                
                                 if str(cs.id) in campground_calender['campsites']:
                                     if nextday_string in campground_calender['campsites'][str(cs.id)]:
                                         campground_calender['campsites'][str(cs.id)][nextday_string] = status[3]                                

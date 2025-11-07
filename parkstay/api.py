@@ -1120,7 +1120,7 @@ def campground_availabilty_view(request,  *args, **kwargs):
                     #
                     
 
-                    if booking_days > 14:
+                    if booking_days > 28:
                         site_obj['campground_available'][int(cid)]['sites'] = []
                         site_obj['campground_available'][int(cid)]['total_available'] = 0
                         site_obj['campground_available'][int(cid)]['total_bookable'] = 0                        
@@ -2765,7 +2765,28 @@ def get_booking_pricing(request, *args, **kwargs):
     dumped_data = geojson.dumps(booking_information)
     return HttpResponse(dumped_data, content_type='application/json')
 
+def get_date_diff_in_days(request, *args, **kwargs):
+    arrival_date = request.GET.get('arrival_date',None)
+    # Define the custom date (format: YYYY-MM-DD)
+    if arrival_date is None:
+        return HttpResponse(geojson.dumps({
+            'status': 'error',
+            'msg': 'arrival_date parameter is required.'
+        }), content_type='application/json', status=400)
+    custom_date = datetime.strptime(arrival_date, "%Y/%m/%d")
 
+    # Get the current date
+    current_date = datetime.now()
+
+    # Calculate the difference in days
+    days_difference = abs((custom_date - current_date).days)
+
+    # Print the result
+    
+    return HttpResponse(geojson.dumps({
+        'status': 'success',
+        'days_difference': days_difference
+    }), content_type='application/json', status=200)
 
 @csrf_exempt
 @require_http_methods(['POST'])

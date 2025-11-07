@@ -64,6 +64,7 @@ api_patterns = [
     re_path(r'^api/campground_availabilty_view/', api.campground_availabilty_view, name='campground_availabilty_view'),
     re_path(r'^api/campsite_availablity_view/(?P<campground_id>[0-9]+)/', api.campsite_availablity_view, name='campsite_availablity_view'),
     re_path(r'^api/search_suggest', api.search_suggest, name='search_suggest'),
+    re_path(r'^api/get_date_diff_in_days', api.get_date_diff_in_days, name='get_date_diff_in_days'),    
     re_path(r'^api/create_booking', api.create_booking, name='create_booking'),
     re_path(r'^api/complete_booking/(?P<booking_hash>[\w]+)/(?P<booking_id>[0-9]+)/', api.complete_booking, name='complete_booking'),
     re_path(r'^api/campground_map/$', api.campground_map_view, name='campground_map'),
