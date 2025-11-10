@@ -1,5 +1,6 @@
 # Prepare the base environment.
-FROM ubuntu:24.04 as builder_base_parkstay
+FROM ghcr.io/dbca-wa/docker-apps-dev:ubuntu_2404_base_python_node  as builder_base_parkstay
+
 MAINTAINER asi@dbca.wa.gov.au
 ENV DEBIAN_FRONTEND=noninteractive
 ENV TZ=Australia/Perth
@@ -9,17 +10,13 @@ ENV SECRET_KEY="ThisisNotRealKey"
 RUN apt-get clean
 RUN apt-get update
 RUN apt-get upgrade -y
-RUN apt-get install --no-install-recommends -y wget git libmagic-dev gcc binutils libproj-dev gdal-bin python3 python3-setuptools python3-dev python3-pip tzdata libreoffice cron rsyslog 
-RUN apt-get install --no-install-recommends -y libpq-dev patch virtualenv
-RUN apt-get install --no-install-recommends -y mtr
-RUN apt-get install --no-install-recommends -y sqlite3 vim ssh htop
-RUN apt-get install --no-install-recommends -y postgresql-client
-RUN apt-get install --no-install-recommends -y nodejs npm
-RUN apt-get install --no-install-recommends -y python3-pil
-# RUN ln -s /usr/bin/python3 /usr/bin/python 
-#RUN ln -s /usr/bin/pip3 /usr/bin/pip
-# RUN pip install --upgrade pip
-# Install Python libs from requirements.txt.
+# RUN apt-get install --no-install-recommends -y wget git libmagic-dev gcc binutils libproj-dev gdal-bin python3 python3-setuptools python3-dev python3-pip tzdata libreoffice cron rsyslog 
+# RUN apt-get install --no-install-recommends -y libpq-dev patch virtualenv
+# RUN apt-get install --no-install-recommends -y mtr
+# RUN apt-get install --no-install-recommends -y sqlite3 vim ssh htop
+# RUN apt-get install --no-install-recommends -y postgresql-client
+# RUN apt-get install --no-install-recommends -y nodejs npm
+# RUN apt-get install --no-install-recommends -y python3-pil
 
 RUN groupadd -g 5000 oim 
 RUN useradd -g 5000 -u 5000 oim -s /bin/bash -d /app
@@ -30,10 +27,10 @@ COPY timezone /etc/timezone
 ENV TZ=Australia/Perth
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
-# Default Scripts
-RUN wget https://raw.githubusercontent.com/dbca-wa/wagov_utils/main/wagov_utils/bin/default_script_installer.sh -O /tmp/default_script_installer.sh
-RUN chmod 755 /tmp/default_script_installer.sh
-RUN /tmp/default_script_installer.sh
+# # Default Scripts
+# RUN wget https://raw.githubusercontent.com/dbca-wa/wagov_utils/main/wagov_utils/bin/default_script_installer.sh -O /tmp/default_script_installer.sh
+# RUN chmod 755 /tmp/default_script_installer.sh
+# RUN /tmp/default_script_installer.sh
 
 
 RUN rm -rf /var/lib/{apt,dpkg,cache,log}/ /tmp/* /var/tmp/*
