@@ -28,8 +28,7 @@
                             </div>
                             <div class="col-md-8">
                                 <div class='input-group date' :id='close_cg_range_start'>
-                                    <input name="closure_start" v-model="range_start" type='text'
-                                        class="form-control" autocomplete="false" />
+                                    <input name="closure_start" v-model="range_start" type='text' class="form-control" autocomplete="off" />
                                 </div>
                             </div>
                         </div>
@@ -44,7 +43,7 @@
                             </div>
                             <div class="col-md-8">
                                 <div class='input-group date' :id='close_cg_range_end'>
-                                    <input name="closure_end" v-model="range_end" type='text' class="form-control" autocomplete="false" />
+                                    <input name="closure_end" v-model="range_end" type='text' class="form-control" autocomplete="off" />
                                 </div>
                             </div>
                         </div>

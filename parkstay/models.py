@@ -848,7 +848,10 @@ class Campsite(models.Model):
 
     def close(self, data):
         closure = CampsiteBookingRange(**data)
+        print ("CLOSURE")
+        print (closure)
         closure.save()
+        print (closure.id)
 
     @staticmethod
     def bulk_create(number, data):

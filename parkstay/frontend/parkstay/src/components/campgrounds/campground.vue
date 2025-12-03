@@ -332,18 +332,33 @@ const closeCampsite = function () {
     });
 }
 const onBulkCloseCampsites = function () {
-    var data = bulkCloseCampsitesRef.value.formdata;
-    console.log(bulkCloseCampsitesRef.value);
-    console.log(data);
+    // var data = bulkCloseCampsitesRef.value.formdata;
+    var formData = {}
+    $.each($('#bulkCloseCGForm').serializeArray(), function(_, field) {
+        if (field.name == 'campsites') {
+
+        } else {
+            formData[field.name] = field.value;
+        }
+
+    });
+
+    formData['campsites'] = $('#bcs-campsites').val();
+    formData['range_start'] = $('#closure_start').val();
+    formData['range_end'] = $('#closure_end').val();
+    formData['status'] = 1
+
     $.ajax({
         url: api_endpoints.bulk_close_campsites(),
         method: 'POST',
         xhrFields: { withCredentials: true },
-        data: data,
+        data: formData,
         headers: { 'X-CSRFToken': helpers.getCookie('csrftoken') },
         dataType: 'json',
-        success: function (data, stat, xhr) {
-            bulkCloseCampsitesRef.value.close();
+        success: function (formData, stat, xhr) {
+            
+            // bulkCloseCampsitesRef.value.hide();       
+            closeBulkCloseCG()     
             refreshCampsiteClosures();
         },
         error: function (resp) {

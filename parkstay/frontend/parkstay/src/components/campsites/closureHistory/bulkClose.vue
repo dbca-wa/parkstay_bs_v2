@@ -28,8 +28,7 @@
                         </div>
                         <div class="col-md-4">
                             <div class='input-group date' id='close_bcs_range_start'>
-                                <input name="closure_start" v-model="formdata.range_start" type='text'
-                                    class="form-control" />
+                                <input name="closure_start" id="closure_start" v-model="formdata.range_start" type='text' class="form-control" autocomplete="off"/>
                             </div>
                         </div>
                     </div>
@@ -44,8 +43,7 @@
                         </div>
                         <div class="col-md-4">
                             <div class='input-group date' id='close_bcs_range_end'>
-                                <input name="closure_end" v-model="formdata.range_end" type='text'
-                                    class="form-control" />
+                                <input name="closure_end" id="closure_end" v-model="formdata.range_end" type='text' class="form-control" autocomplete="off"/>
                             </div>
                         </div>
                     </div>
@@ -119,10 +117,14 @@ watch(() => isOpen.value, (val) => {
 
 const addClosure = function () {
     
-    const validNumCampsites = formdata.value.campsites > 0
+    // const validNumCampsites = formdata.value.campsites > 0
     const element = $('#bcs-campsites')
+    const  validNumCampsites = $('#bcs-campsites').val().length;
+    console.log("ADDCC")
+    console.log(formdata.value.campsites);
     helpers.formUtils.removeErrorMessage(element)
-    if (!validNumCampsites) {
+    if (validNumCampsites > 0) {
+    } else {
         helpers.formUtils.appendErrorMessage(element, 'Select the campsites to be closed')
     }
     if (form.value.valid() && validNumCampsites ) {

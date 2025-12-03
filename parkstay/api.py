@@ -223,7 +223,7 @@ class CampsiteViewSet(viewsets.ModelViewSet):
             print(traceback.print_exc())
             raise serializers.ValidationError(str(e))
 
-    def close_campsites(self, closure_data, campsites):
+    def close_campsites(self, closure_data, campsites):        
         for campsite in campsites:
             closure_data['campsite'] = campsite
             try:
@@ -232,6 +232,7 @@ class CampsiteViewSet(viewsets.ModelViewSet):
                 instance = Campsite.objects.get(pk=campsite)
                 instance.close(dict(serializer.validated_data))
             except Exception as e:
+                print (e)
                 raise
 
     @list_route(methods=['post'], detail=False)
@@ -239,7 +240,7 @@ class CampsiteViewSet(viewsets.ModelViewSet):
         with transaction.atomic():
             try:
                 http_status = status.HTTP_200_OK
-                closure_data = request.data.copy()
+                closure_data = request.data.copy()        
                 campsites = closure_data.pop('campsites[]')
                 self.close_campsites(closure_data, campsites)
                 return Response('All selected campsites closed')
