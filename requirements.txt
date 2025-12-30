@@ -68,7 +68,8 @@ setuptools==80.4.0
 wheel==0.42.0
 git+https://github.com/dbca-wa/wagov_utils
 idna==3.7
-sqlparse==0.5.4
 sentry-sdk~=2.19.0
 pytz==2024.1
 python-decouple==3.8
+urllib3~=2.6.0
+sqlparse~=0.5.5
