@@ -63,7 +63,7 @@ Babel==2.15.0
 git+https://github.com/dbca-wa/appmonitor_client.git#egg=appmonitor_client
 git+https://github.com/xzzy/encoders.git#egg=encoders
 python-decouple>=3.8
-numpy==1.26.3
+numpy~=2.4.0
 setuptools==80.9.0
 wheel==0.42.0
 git+https://github.com/dbca-wa/wagov_utils
