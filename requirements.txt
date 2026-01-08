@@ -64,7 +64,7 @@ encoders==0.0.4
 git+https://github.com/dbca-wa/appmonitor_client.git#egg=appmonitor_client
 python-decouple>=3.8
 numpy==1.26.3
-setuptools==80.4.0
+setuptools==80.9.0
 wheel==0.42.0
 git+https://github.com/dbca-wa/wagov_utils
 idna==3.7
