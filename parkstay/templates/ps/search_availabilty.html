@@ -99,8 +99,7 @@
   <div class="row">
     <div class="col-lg-12">
       <h3>
-        Find a place to stay in Western Australia’s national and conservation
-        parks
+        Find a place to stay
       </h3>
       <div id="loading-error"></div>
       <form autocomplete="off" onkeydown="return event.key != 'Enter';">
@@ -219,7 +218,7 @@
                 
               </div>
 
-                                  <div class='text-danger ps-2 pt-1' >
+           <div class='text-danger ps-2 pt-1' style="display:none">
                   <i class="bi bi-info-circle-fill"></i> Bookings can be made up to 180 days (approx. six months) before arrival.
           </div>
             </div>
@@ -281,7 +280,75 @@
         </div>
         {% endif %}
 
-        <div id="search-filters" class="round-box col-12 px-3">
+        
+        <textarea id="feature_json" style="display: none">
+{{ features_json }}</textarea
+        >
+      </form>
+
+      <div id="search-selections" class="round-box col-12 px-3">
+        <div class="col-12">
+          <div class="col-sm-12 col-md-12">
+            <ul class="nav nav-pills nav-justified">
+              <li class="nav-item">
+                <a
+                  id="card-preview-tab"
+                  class="nav-link"
+                  aria-current="page"
+                  href="javascript:void(0);"
+                  onclick="search_avail.select_filter_tab('campgrounds');"
+                  >Grid</a
+                >
+              </li>
+              <li class="nav-item">
+                <a
+                  id="map-preview-tab"
+                  class="nav-link active"
+                  href="javascript:void(0);"
+                  onclick="search_avail.select_filter_tab('map');"
+                  >Map</a
+                >
+              </li>
+            </ul>
+
+            <h5></h5>
+          </div>
+        </div>
+
+        <div class="col-12">
+          <div class="row">
+            {% block vue-component %}
+            <div id="parkfinder"></div>
+            <script type="text/javascript">
+              var parkstayUrl =
+                window.location.protocol + "//" + window.location.host;
+            </script>
+            {% endblock %} {% block custom_searchavail %}
+            {% if not DEV_STATIC_SEARCH_AVAIL %}
+            <script type="module" src="{% static 'searchavail2_vue/js/main.js' %}?ver={{ GIT_COMMIT_HASH }}"></script>
+            {% else %}
+            <script type="module" src="{{ DEV_STATIC_SEARCH_AVAIL_URL }}?ver={{ GIT_COMMIT_HASH }}"></script>
+            {% endif %} {% endblock %}
+          </div>
+        </div>
+
+        <div class="col-12" style="display: none">
+          <div class="col-12" align="right">
+            <button
+              type="button"
+              name="search-avail"
+              id="search-avail"
+              class="form-button"
+              style="width: 100%"
+            >
+              Search
+            </button>
+          </div>
+        </div>
+      </div>
+
+
+<div id="search-filters" class="round-box col-12 px-3">
           <div class="col-12">
             <div class="col-sm-12 col-md-12">
               <h5></h5>
@@ -385,71 +452,9 @@
           </div>
         </div>
 
-        <textarea id="feature_json" style="display: none">
-{{ features_json }}</textarea
-        >
-      </form>
 
-      <div id="search-selections" class="round-box col-12 px-3">
-        <div class="col-12">
-          <div class="col-sm-12 col-md-12">
-            <ul class="nav nav-pills nav-justified">
-              <li class="nav-item">
-                <a
-                  id="card-preview-tab"
-                  class="nav-link"
-                  aria-current="page"
-                  href="javascript:void(0);"
-                  onclick="search_avail.select_filter_tab('campgrounds');"
-                  >Grid</a
-                >
-              </li>
-              <li class="nav-item">
-                <a
-                  id="map-preview-tab"
-                  class="nav-link active"
-                  href="javascript:void(0);"
-                  onclick="search_avail.select_filter_tab('map');"
-                  >Map</a
-                >
-              </li>
-            </ul>
 
-            <h5></h5>
-          </div>
-        </div>
 
-        <div class="col-12">
-          <div class="row">
-            {% block vue-component %}
-            <div id="parkfinder"></div>
-            <script type="text/javascript">
-              var parkstayUrl =
-                window.location.protocol + "//" + window.location.host;
-            </script>
-            {% endblock %} {% block custom_searchavail %}
-            {% if not DEV_STATIC_SEARCH_AVAIL %}
-            <script type="module" src="{% static 'searchavail2_vue/js/main.js' %}?ver={{ GIT_COMMIT_HASH }}"></script>
-            {% else %}
-            <script type="module" src="{{ DEV_STATIC_SEARCH_AVAIL_URL }}?ver={{ GIT_COMMIT_HASH }}"></script>
-            {% endif %} {% endblock %}
-          </div>
-        </div>
-
-        <div class="col-12" style="display: none">
-          <div class="col-12" align="right">
-            <button
-              type="button"
-              name="search-avail"
-              id="search-avail"
-              class="form-button"
-              style="width: 100%"
-            >
-              Search
-            </button>
-          </div>
-        </div>
-      </div>
     </div>
     {% endif %}
   </div>
