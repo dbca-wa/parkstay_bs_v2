@@ -62,11 +62,11 @@ RUN chmod 777 /app/parkstay/cache/
 # RUN cd /app/parkstay/frontend/availability; npm ci --omit=dev && \
 #     cd /app/parkstay/frontend/availability; npm run build
 
-RUN cd /app/parkstay/frontend/parkstay; npm ci --omit=dev && \
-    cd /app/parkstay/frontend/parkstay; npm run build   
+RUN cd /app/parkstay/frontend/parkstay; npm install
+RUN cd /app/parkstay/frontend/parkstay; npm run build
 
-RUN cd /app/parkstay/frontend/searchavail2; npm ci --omit=dev && \
-    cd /app/parkstay/frontend/searchavail2; npm run build         
+RUN cd /app/parkstay/frontend/searchavail2; npm install
+RUN cd /app/parkstay/frontend/searchavail2; npm run build         
 
 RUN python manage.py collectstatic --noinput
 
