@@ -186,6 +186,7 @@
                     </div>
                 </div>
                 <div class="small-12 medium-12 large-12 columns">
+                    <div class="alert alert-info"><i class="bi bi-geo-alt"></i> Tap/click a location to proceed</div>
                     <div id="map"></div>
                     <div id="mapPopup" class="mapPopup" v-cloak>
                         <a href="#" id="mapPopupClose" class="mapPopupClose"></a>
@@ -199,7 +200,9 @@
                         </div>
                     </div>
                 </div>
+
             </div>
+                            
 
         </div>
 

@@ -58,6 +58,16 @@ RUN touch /app/git_hash
 COPY --chown=oim:oim  parkstay ./parkstay
 RUN mkdir -p /app/parkstay/cache/
 RUN chmod 777 /app/parkstay/cache/
+
+# RUN cd /app/parkstay/frontend/availability; npm ci --omit=dev && \
+#     cd /app/boranga/frontend/availability; npm run build
+
+RUN cd /app/parkstay/frontend/parkstay; npm ci --omit=dev && \
+    cd /app/boranga/frontend/parkstay; npm run build   
+
+RUN cd /app/parkstay/frontend/searchavail2; npm ci --omit=dev && \
+    cd /app/boranga/frontend/searchavail2; npm run build         
+
 RUN python manage.py collectstatic --noinput
 
 EXPOSE 8080

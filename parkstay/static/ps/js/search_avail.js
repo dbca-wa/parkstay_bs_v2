@@ -366,10 +366,10 @@ var search_avail = {
   },
   select_dates: async function (start, end) {
     $("#when-date-range #when-dates").html(
-      "<b>Arrive:</b> " +
-        start.format("ddd D MMM YY") +
-        " <b>Depart:</b> " +
-        end.format("ddd D MMM YY")
+      "" +
+        start.format("D MMM YY") +
+        " to " +
+        end.format("D MMM YY")
     );
     const fStartDate = start.format("YYYY/MM/DD");
     const fEndDate = end.format("YYYY/MM/DD");
