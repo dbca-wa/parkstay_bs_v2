@@ -28,7 +28,9 @@
         <link type="text/css" href="/static/ps/css/search_avail2.css?ver={{ GIT_COMMIT_HASH }}" rel="stylesheet">
 {% endblock %}
 {% block content %}
+ {% include "ps/modal_error.html" %}
 {% if not booking %}
+   
     <input type='hidden' value='disabled' id='site_queue_manager_active'>
     <div class="container">
         {% include "ps/booking/booking_session_expired_message.html"%}
@@ -1283,6 +1285,7 @@ We may ask for proof of identity. Bookings are not transferable and you cannot b
                 return;
             },
             validate: function (e) {
+               
                 var isValid = true;
                 var form = document.forms.addBookingForm;
                 var fields = $(form).find(':input');
@@ -1301,7 +1304,22 @@ We may ask for proof of identity. Bookings are not transferable and you cannot b
                                $(field).tooltip()
                                    .attr("data-original-title", errMsg)
                              isValid = false;
+                         
+                         if (isValid == false) {                            
+                            if (field.id == "id_postcode") {
+                                $("#error-title").html("Invalid Post Code");                            
+                                $("#error-message").html("Please enter a valid postcode for your address.");
+                                $("#MessageBox").modal("show");
+                            }
+                            if (field.id == "id_phone") {
+                                $("#error-title").html("Invalid Phone");                            
+                                $("#error-message").html("Please enter a valid phone number.");
+                                $("#MessageBox").modal("show");
+                            }                            
+                            return;
                          }
+                        }
+
                     }
                 });
                 if (isValid) {

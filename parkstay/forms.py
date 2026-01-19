@@ -34,7 +34,7 @@ class MakeBookingsForm(forms.Form):
     first_name = forms.CharField(label="Given Name(s)")
     last_name = forms.CharField(widget=forms.TextInput(attrs={'required': True}))
     phone = forms.CharField(widget=forms.TextInput(attrs={'required': True}))
-    postcode = forms.CharField(max_length=10, label="Post Code", widget=forms.TextInput(attrs={'required': True}))
+    postcode = forms.CharField(max_length=10, label="Postcode", widget=forms.TextInput(attrs={'required': True}))
     #country = forms.ModelChoiceField(queryset=Country.objects.all(), to_field_name="iso_3166_1_a2")
 
     def __init__(self, *args, **kwargs):
