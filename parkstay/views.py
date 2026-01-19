@@ -385,8 +385,6 @@ class MakeBookingsView(TemplateView):
                             form_context['last_name'] = old_booking_obj.details['last_name']
                             form_context['phone'] = old_booking_obj.details['phone']
                             form_context['postcode'] = old_booking_obj.details['postcode']
-                            print ("POST")
-                            print (form_context)
 
                 form = AnonymousMakeBookingsForm(form_context)
             else:
