@@ -136,9 +136,14 @@ MENU 2
              }
         </script>
         {% endif %}
+        <script>
+        // Resolve issue with CSRF token not being set in some cases and private browsing modes
+        document.cookie = "csrftoken={{ csrf_token}}; path=/"
+        </script>
 {% endblock %}
 
 {% block page_footer %}
+
 <footer class="footer mt-auto py-3">
     <div class="container-fluid">
         <div class="row">
