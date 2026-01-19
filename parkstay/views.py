@@ -384,12 +384,24 @@ class MakeBookingsView(TemplateView):
                             form_context['first_name'] = old_booking_obj.details['first_name']
                             form_context['last_name'] = old_booking_obj.details['last_name']
                             form_context['phone'] = old_booking_obj.details['phone']
+                            form_context['postcode'] = old_booking_obj.details['postcode']
+                            print ("POST")
+                            print (form_context)
 
                 form = AnonymousMakeBookingsForm(form_context)
             else:
-                form_context['first_name'] = request.user.first_name
-                form_context['last_name'] = request.user.last_name
-                form_context['phone'] = request.user.phone_number
+                if booking:
+                    if booking.old_booking:
+                        old_booking_obj = Booking.objects.get(id=booking.old_booking)
+                        form_context['first_name'] = old_booking_obj.details['first_name']
+                        form_context['last_name'] = old_booking_obj.details['last_name']
+                        form_context['phone'] = old_booking_obj.details['phone']
+                        form_context['postcode'] = old_booking_obj.details['postcode']
+                else:
+                    form_context['first_name'] = request.user.first_name
+                    form_context['last_name'] = request.user.last_name
+                    form_context['phone'] = request.user.phone_number
+                
                 form = MakeBookingsForm(form_context)
 
         vehicles = VehicleInfoFormset()
