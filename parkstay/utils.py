@@ -93,6 +93,7 @@ def create_booking_by_class(request,campground_id, multiplesites_class_totals, s
                 'num_motorcycle' : num_motorcycle,
                 'num_trailer' : num_trailer,
                 'num_caravan' : num_caravan
+                
             },
             expiry_time=timezone.now() + timedelta(seconds=settings.BOOKING_TIMEOUT),
             campground=campground,
@@ -363,7 +364,7 @@ def create_booking_by_site(request,sites_qs, start_date, end_date, num_adult=0, 
                 'num_trailer' : num_trailer,
                 'num_caravan' : num_caravan,
                 'multiplesites': multiplesites,
-                'selecttype' : selecttype
+                'selecttype' : selecttype,                
             },
             cost_total=cost_total,
             override_price=Decimal(override_price) if (override_price is not None) else None,

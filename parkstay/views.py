@@ -457,7 +457,7 @@ class MakeBookingsView(TemplateView):
         booking.details['last_name'] = form.cleaned_data.get('last_name')
         booking.details['phone'] = form.cleaned_data.get('phone')
         #booking.details['country'] = form.cleaned_data.get('country').iso_3166_1_a2
-        #booking.details['postcode'] = form.cleaned_data.get('postcode')
+        booking.details['postcode'] = form.cleaned_data.get('postcode')
         booking.details['num_adult'] = form.cleaned_data.get('num_adult')
         booking.details['num_concession'] = form.cleaned_data.get('num_concession')
         booking.details['num_child'] = form.cleaned_data.get('num_child')
@@ -466,6 +466,7 @@ class MakeBookingsView(TemplateView):
         booking.details['outsideregion'] = request.POST.get('outsideregion', False)
         booking.details['trav_res'] = request.POST.get('trav_res', False)
         booking.details['no_payment'] = request.POST.get('no_payment', False)
+        
         if customer_managed_booking_disabled == 'true':
             booking.customer_managed_booking_disabled = True
         else:

@@ -2853,7 +2853,7 @@ def create_booking(request, *args, **kwargs):
         'num_caravan' : request.POST.get('num_caravan',0),
         'num_motorcycle' : request.POST.get('num_motorcycle',0),
         'num_trailer' : request.POST.get('num_trailer',0),
-
+        'postcode' : request.POST.get('postcode'),
         'campground': request.POST.get('campground', 0),
         'campsite_class': request.POST.get('campsite_class', 0),
         'campsite': request.POST.get('campsite', 0),
@@ -2880,6 +2880,7 @@ def create_booking(request, *args, **kwargs):
     num_motorcycle = serializer.validated_data['num_motorcycle']
     num_trailer = serializer.validated_data['num_trailer']
     old_booking = serializer.validated_data['old_booking']
+    # postcode = serializer.validated_data['postcode']
 
     multiplesites_class_totals = {}
     selecttype = None
@@ -3015,7 +3016,7 @@ def create_booking(request, *args, **kwargs):
                 num_adult, num_concession,
                 num_child, num_infant,
                 num_vehicle, num_motorcycle, num_campervan, 
-                num_trailer,num_caravan, old_booking,
+                num_trailer,num_caravan, old_booking
             )
 
             booking.created_by = request.user.id
