@@ -384,8 +384,17 @@ var search_avail = {
 
     $("#when-nights").html(whennights);
     if (search_avail.var.page == "campground") {
+      if (whennights <= 0) {
+
+        $("#error-title").html("Invalid Date Selection");
+
+        $("#error-message").html("Your arrival and departure dates cannot be the same dates. Please select valid dates.");
+        $("#MessageBox").modal("show");
+  
+      } else {
       // search_avail.load_campground_availabilty();
       $("#map-reload").trigger("click");
+      }
     }
     if (search_avail.var.page == "campsite-availablity") {
       search_avail.load_campsite_availabilty();
@@ -548,6 +557,7 @@ calculate_arrival_days_old_07112025: function(targetDateString) {
     $("#coord_2").val(coord_2);
     $("#zoom_level").val(zoom_level);
     $("#search-filters").show();
+    
     $("#search-selections").show();
     // search_avail.load_campground_availabilty();
     // need to open the map first before the campground cards will show
@@ -1039,6 +1049,7 @@ calculate_arrival_days_old_07112025: function(targetDateString) {
             if (resp.responseJSON.msg.hasOwnProperty("title")) {
               errortitle = resp.responseJSON.msg.title;
             }
+            
           }
         }
 
@@ -1074,6 +1085,16 @@ calculate_arrival_days_old_07112025: function(targetDateString) {
   },
   load_campsite_availabilty: function () {
     var change_query = "";
+
+    var when_nights =$("#when-nights").html();
+    if (when_nights <= 0) {
+                $("#campsite-availablity-results").html(
+              "<center style='color:red' release_date='True' >The arrival and departure date can not be the same.  Please check your arrival and departure dates.</center>"
+            );
+        // alert(when_nights);
+        return;
+    }
+
     if (search_avail.var.change_booking_id != null) {
       change_query = "&change_booking_id=" + search_avail.var.change_booking_id;
     }

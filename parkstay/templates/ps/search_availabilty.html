@@ -1,6 +1,10 @@
 {% extends 'ps/base.html' %} {% load static %} 
 {% block messages %} {% endblock%} 
-{% block content %} {% include "ps/modal_loader.html" %}
+{% block content %} 
+
+
+{% include "ps/modal_loader.html" %}
+{% include "ps/modal_error.html" %}
 
 <!-- https://cssbuttoncreator.com/ -->
 <script>
