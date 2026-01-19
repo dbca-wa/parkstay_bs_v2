@@ -388,7 +388,7 @@ var search_avail = {
 
         $("#error-title").html("Invalid Date Selection");
 
-        $("#error-message").html("Your arrival and departure dates cannot be the same dates. Please select valid dates.");
+        $("#error-message").html("Your arrival and departure dates cannot be the same. Tap/click on your arrival date, then tap/click on your departure date in the same calendar.");
         $("#MessageBox").modal("show");
   
       } else {
