@@ -397,6 +397,15 @@ var search_avail = {
       }
     }
     if (search_avail.var.page == "campsite-availablity") {
+      if (whennights <= 0) {
+
+        $("#error-title").html("Invalid Date Selection");
+
+        $("#error-message").html("Your arrival and departure dates cannot be the same. Tap/click on your arrival date, then tap/click on your departure date in the same calendar.");
+        $("#MessageBox").modal("show");
+        
+  
+      }
       search_avail.load_campsite_availabilty();
     }
   },
@@ -1089,7 +1098,7 @@ calculate_arrival_days_old_07112025: function(targetDateString) {
     var when_nights =$("#when-nights").html();
     if (when_nights <= 0) {
                 $("#campsite-availablity-results").html(
-              "<center style='color:red' release_date='True' >The arrival and departure date can not be the same.  Please check your arrival and departure dates.</center>"
+              "<center style='color:red' release_date='True' >Your arrival and departure dates cannot be the same. Tap/click on your arrival date, then tap/click on your departure date in the same calendar.</center>"
             );
         // alert(when_nights);
         return;
