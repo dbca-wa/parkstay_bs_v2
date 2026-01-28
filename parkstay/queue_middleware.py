@@ -49,6 +49,7 @@ class QueueControl(object):
                                              session_key = queue_json['session_key']
                                         if sitequeuesession !=session_key:
                                              print ("DIFFERENCE SESSION KEY")
+                                             print ("CURRENT:"+sitequeuesession+"NEW:"+session_key)
                                              print (queue_json)
                                         
                                         if queue_json['status'] == 'Waiting': 
