@@ -42,7 +42,7 @@ class QueueControl(object):
                                         #  else:
                                         ipaddress = self.get_client_ip(request)
                                         url = settings.QUEUE_BACKEND_URL+"/api/check-create-session/?session_key="+sitequeuesession+"&queue_group="+settings.QUEUE_GROUP_NAME+"&script_exempt_key="+settings.QUEUE_SCRIPT_EXEMPT_KEY+"&ipaddress="+ipaddress
-                                        resp = requests.get(url, data = {}, cookies={},  verify=False, timeout=10)
+                                        resp = requests.get(url, data = {}, cookies={},  verify=False, timeout=20)
                                         
                                         queue_json = resp.json()
                                         if 'session_key' in queue_json:
