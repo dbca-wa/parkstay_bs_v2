@@ -1,3 +1,4 @@
+import json
 import re
 import datetime
 import requests
@@ -9,6 +10,22 @@ from django.utils import timezone
 
 CHECKOUT_PATH = re.compile('^/ledger-api')
 PROCESS_PAYMENT =  re.compile('^/ledger-api/process-payment')
+
+
+BLOCKED_SCRIPTING = [
+    "curl",
+    "wget",
+    "python-requests",
+    "python",
+    "libwww-perl",
+    "scrapy",
+    "httpclient",
+    "java",
+    "okhttp",
+    "Go-http-client",
+    "axios",
+    "PostmanRuntime"
+]
 
 class QueueControl(object):
 
@@ -30,6 +47,18 @@ class QueueControl(object):
                          if 'HTTP_HOST' in request.META:
                               if settings.QUEUE_ACTIVE_HOSTS == request.META.get('HTTP_HOST',''):
                                    if settings.QUEUE_WAITING_URL:
+                                        script_exempt_key = request.GET.get('script_exempt_key',None)
+                                        browser_agent = ''
+                                        if 'HTTP_USER_AGENT' in request.META:
+                                             browser_agent = request.META['HTTP_USER_AGENT']
+                                             if script_exempt_key == settings.QUEUE_SCRIPT_EXEMPT_KEY:
+                                                  pass
+                                             else:                                        
+                                                  for blocked_script in BLOCKED_SCRIPTING:
+                                                       if blocked_script in browser_agent:                                                            
+                                                            response =HttpResponse("<script>window.location.replace('"+settings.QUEUE_BACKEND_URL+"/site-queue/waiting-room/"+settings.QUEUE_GROUP_NAME+"/');</script>Redirecting")                                                                                                                        
+                                                            return response                                                                                                         
+
                                         if sitequeuesession is None:
                                              sitequeuesession=''
                                         #  if sitequeuesession is None:
