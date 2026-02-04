@@ -384,7 +384,10 @@ class MakeBookingsView(TemplateView):
                             form_context['first_name'] = old_booking_obj.details['first_name']
                             form_context['last_name'] = old_booking_obj.details['last_name']
                             form_context['phone'] = old_booking_obj.details['phone']
-                            form_context['postcode'] = old_booking_obj.details['postcode']
+                            if 'postcode' in old_booking_obj.details:
+                                form_context['postcode'] = old_booking_obj.details['postcode']
+                            else:
+                                form_context['postcode'] = ''
 
                 form = AnonymousMakeBookingsForm(form_context)
             else:
@@ -394,7 +397,10 @@ class MakeBookingsView(TemplateView):
                         form_context['first_name'] = old_booking_obj.details['first_name']
                         form_context['last_name'] = old_booking_obj.details['last_name']
                         form_context['phone'] = old_booking_obj.details['phone']
-                        form_context['postcode'] = old_booking_obj.details['postcode']
+                        if 'postcode' in old_booking_obj.details:
+                            form_context['postcode'] = old_booking_obj.details['postcode']
+                        else:
+                            form_context['postcode'] = ''
 
                     else:
                         form_context['first_name'] = request.user.first_name

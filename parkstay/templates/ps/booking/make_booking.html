@@ -87,7 +87,7 @@
     <input type='hidden' value='disabled' id='REMOVETHISPARTOENABLE-site_queue_manager_active'>
     <form method="POST" name="addBookingForm" @submit.prevent="validate()" novalidate><div class="container">
     <input id="booking_hash_id" name="booking_hash_id" type="hidden" value="{{ checkouthash }}" />
-    {% csrf_token %}
+    <input type="hidden" name="csrfmiddlewaretoken" value="No-Token-Provided" id='addbookingform-csrfmiddlewaretoken'>
 
     <div class="container" style='z-index:1'>
             <div class="row">
@@ -892,7 +892,7 @@ We may ask for proof of identity. Bookings are not transferable and you cannot b
     var book = new Vue({
         el: '#addBooking',
         data: {
-	    csrf_token: '{{ csrf_token }}',
+	    csrf_token: psutils.getCookie('csrftoken'),
             expiry: moment('{{ expiry|escapejs }}'),
             timer: {{ timer }},
             get_booking_info_url: '/api/booking_pricing/',
@@ -1130,11 +1130,11 @@ We may ask for proof of identity. Bookings are not transferable and you cannot b
             },
             update_booking: function() {
                 console.log("update booking");
-	        $('#vehicle-popup-error').hide();
-	        $('#vehicle-popup-error').html('');
-		$('#override-popup-error').hide();
-		$('#override-popup-error').html('');
-
+                $('#vehicle-popup-error').hide();
+                $('#vehicle-popup-error').html('');
+                $('#override-popup-error').hide();
+                $('#override-popup-error').html('');
+                var csrf_token_cookie = psutils.getCookie('csrftoken');
                 var vm = this;
                 var post_data = {'vehicles': vm.vehicles, 'price_override': vm.price_override, 'price_override_admin' : vm.price_override_admin, 'no_payment': vm.no_payment, 'customer_managed_booking_disabled': vm.customer_managed_booking_disabled}
                 $.ajax({
@@ -1142,7 +1142,7 @@ We may ask for proof of identity. Bookings are not transferable and you cannot b
                     method: 'POST',
                     dataType: 'json',
                     contentType: 'application/json',
-                    headers: {'X-CSRFToken' : vm.csrf_token },
+                    headers: {'X-CSRFToken' : csrf_token_cookie},
                     data: JSON.stringify({'payload': post_data}),
                     success: function (response) {
                           vm.booking_data = response;
@@ -1323,6 +1323,8 @@ We may ask for proof of identity. Bookings are not transferable and you cannot b
                     }
                 });
                 if (isValid) {
+                    var cookie_csrftoken = psutils.getCookie('csrftoken');                         
+                    $('#addbookingform-csrfmiddlewaretoken').val(cookie_csrftoken);                                      
                     form.submit();
                 }
             }

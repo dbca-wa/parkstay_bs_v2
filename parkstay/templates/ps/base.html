@@ -12,6 +12,7 @@
 {% endblock %}
 
 {% block extra_js %}
+    <script type="text/javascript" src="/static/ps/js/psutils.js?ver={{ GIT_COMMIT_HASH }}"></script>
     <script type="text/javascript" src="/static/common/node_modules/bootstrap-datepicker/js/bootstrap-datepicker.js?ver={{ GIT_COMMIT_HASH }}"></script>
     <script type="text/javascript" src="/static/ps/js/management.js?ver={{ GIT_COMMIT_HASH }}"></script>
     <script type="text/javascript" src="/static/ps/js/search_avail.js?ver={{ GIT_COMMIT_HASH }}"></script>
@@ -136,10 +137,6 @@ MENU 2
              }
         </script>
         {% endif %}
-        <script>
-        // Resolve issue with CSRF token not being set in some cases and private browsing modes
-        document.cookie = "csrftoken={{ csrf_token}}; path=/"
-        </script>
 {% endblock %}
 
 {% block page_footer %}
