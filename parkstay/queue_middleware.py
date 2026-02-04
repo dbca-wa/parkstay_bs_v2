@@ -101,18 +101,18 @@ class QueueControl(object):
           if len(session_key) > 5:
                response.set_cookie('sitequeuesession', session_key, domain=settings.QUEUE_DOMAIN)
           return response
-
-
-     def get_client_ip(self,request):
+     
+     def get_client_ip(request):
           x_real_ip = request.META.get('HTTP_X_REAL_IP')
           x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+          x_orignal_forwarded_for =  request.META.get('HTTP_X_ORIGINAL_FORWARDED_FOR')
 
-          if x_real_ip:
+          if x_orignal_forwarded_for:
+               ip = x_orignal_forwarded_for.split(',')[-1].strip()
+          elif x_real_ip:
                ip = x_real_ip
           elif x_forwarded_for:
                ip = x_forwarded_for.split(',')[-1].strip()
           else:
                ip = request.META.get('REMOTE_ADDR')
-          return ip
-
-     
+          return ip     
