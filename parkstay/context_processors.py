@@ -77,6 +77,7 @@ def parkstay_url(request):
         'GIT_COMMIT_HASH' : settings.GIT_COMMIT_HASH,
         'QUEUE_DOMAIN' : settings.QUEUE_DOMAIN,
         'QUEUE_URL' : settings.QUEUE_URL,
+        'QUEUE_ENDPOINT_URL' : settings.QUEUE_ENDPOINT_URL,
         'QUEUE_ACTIVE_HOSTS' : settings.QUEUE_ACTIVE_HOSTS,
         'QUEUE_GROUP_NAME' : settings.QUEUE_GROUP_NAME,
         'LEDGER_UI_URL' : settings.LEDGER_UI_URL,
