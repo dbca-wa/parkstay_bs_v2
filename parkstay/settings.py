@@ -155,6 +155,7 @@ VERSION_NO = '3.12'
 BOOKING_PROPERTY_CACHE_VERSION='v1.04'
 QUEUE_DOMAIN = decouple.config('QUEUE_DOMAIN',default='')
 QUEUE_URL = decouple.config('QUEUE_URL',default='')
+QUEUE_ENDPOINT_URL = decouple.config('QUEUE_ENDPOINT_URL', default='')
 QUEUE_BACKEND_URL = decouple.config('QUEUE_BACKEND_URL',default='')
 QUEUE_ACTIVE_HOSTS = decouple.config('QUEUE_ACTIVE_HOSTS',default='')
 ENABLE_QUEUE_MIDDLEWARE = decouple.config('ENABLE_QUEUE_MIDDLEWARE',default=False, cast=bool)
