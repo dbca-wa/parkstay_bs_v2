@@ -34,6 +34,7 @@ from ledger_api_client.ledger_models import Address
 from ledger_api_client.ledger_models import Invoice
 from ledger_api_client.ledger_models import Basket
 from ledger_api_client.country_models import Country
+from django.shortcuts import render, get_object_or_404, redirect
 
 ##
 #from ledger.accounts.models import EmailUser, Address
@@ -1059,6 +1060,23 @@ def campground_availabilty_view(request,  *args, **kwargs):
     #
     #print (attributes_obj)
 
+    HTTP_REFERER_VALID = False
+    HTTP_REFERER = request.META.get('HTTP_REFERER', None)
+    if HTTP_REFERER:
+        for aru in settings.ACCEPTED_REFERER_URL:
+            if HTTP_REFERER.startswith(aru):
+                HTTP_REFERER_VALID  = True            
+        if HTTP_REFERER_VALID is True:                
+            pass
+        else:
+            messages.error(request, "A error occured accessing the system,  please try again")
+            print ("HTTP_REFERER not allowed : "+ str(HTTP_REFERER))
+            return HttpResponse(json.dumps(site_obj), content_type='application/json')     
+    else:
+        messages.error(request, "A error occured accessing the system,  please try again")
+        print ("HTTP_REFERER not allowed : "+ str(HTTP_REFERER))
+        return HttpResponse(json.dumps(site_obj), content_type='application/json')
+
     #available_campsites_obj = {}
     campgrounds = utils_cache.all_campgrounds()
     for c in campgrounds:
@@ -1200,6 +1218,27 @@ def campsite_availablity_view(request,  *args, **kwargs):
 
     """Fetch full campsite availability for a campground."""
     # check if the user has an ongoing booking
+    result = {}
+
+    HTTP_REFERER_VALID = False
+    HTTP_REFERER = request.META.get('HTTP_REFERER', None)
+    if HTTP_REFERER:
+        for aru in settings.ACCEPTED_REFERER_URL:
+            print (aru)
+            if HTTP_REFERER.startswith(aru):
+                HTTP_REFERER_VALID  = True            
+        if HTTP_REFERER_VALID is True:                
+            pass
+        else:
+            messages.error(request, "A error occured accessing the system,  please try again")
+            print ("HTTP_REFERER not allowed : "+ str(HTTP_REFERER))
+            return HttpResponse(geojson.dumps(result,cls=DecimalEncoder), content_type='application/json', status=500)
+               
+    else:
+        messages.error(request, "A error occured accessing the system,  please try again")
+        print ("HTTP_REFERER not allowed : "+ str(HTTP_REFERER))
+        return HttpResponse(geojson.dumps(result,cls=DecimalEncoder), content_type='application/json',status=500) 
+
     user_logged_in = None
     today = date.today()
     if request.user.is_authenticated:
