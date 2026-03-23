@@ -95,7 +95,7 @@ CRON_CLASSES = [
 
 # Additional logging for parkstay
 LOGGING['loggers']['booking_checkout'] = {
-    'handlers': ['console'],
+    'handlers': ['file'],
     'level': 'INFO'
 }
 
@@ -136,6 +136,7 @@ WAITING_QUEUE_ENABLED = decouple.config('WAITING_QUEUE_ENABLED',default=False, c
 QUEUE_GROUP_NAME = decouple.config('QUEUE_GROUP_NAME', default=None)
 QUEUE_WAITING_URL = decouple.config('QUEUE_WAITING_URL', default=None)
 QUEUE_SCRIPT_EXEMPT_KEY = decouple.config('QUEUE_SCRIPT_EXEMPT_KEY', default='')
+ACCEPTED_REFERER_URL =  decouple.config('ACCEPTED_REFERER_URL', default=['http://localhost'])
 
 PS_PAYMENT_SYSTEM_ID = decouple.config('PS_PAYMENT_SYSTEM_ID', default='S483')
 if not VALID_SYSTEMS:

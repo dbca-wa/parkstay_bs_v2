@@ -1298,6 +1298,23 @@ class SearchAvailablityByCampground(TemplateView):
         #print ("BASKET")
         #print (basket)
         # End Check for temp booking and if payment exists otherwise clean up temporary booking.
+        HTTP_REFERER_VALID = False
+        HTTP_REFERER = request.META.get('HTTP_REFERER', None)
+        if HTTP_REFERER:
+            for aru in settings.ACCEPTED_REFERER_URL:
+                print (aru)
+                if HTTP_REFERER.startswith(aru):
+                    HTTP_REFERER_VALID  = True            
+            if HTTP_REFERER_VALID is True:                
+                pass
+            else:
+                messages.error(request, "A error occured accessing the system,  please try again")
+                print ("HTTP_REFERER not allowed : "+ str(HTTP_REFERER))
+                return redirect("/")                
+        else:
+            messages.error(request, "A error occured accessing the system,  please try again")
+            print ("HTTP_REFERER not allowed : "+ str(HTTP_REFERER))
+            return redirect("/") 
         
         today = timezone.now().date()
         parkstay_officers = False
