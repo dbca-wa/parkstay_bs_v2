@@ -54,6 +54,11 @@ class Command(BaseCommand):
                    
             booking_reference = re.sub(r'\D', '', line)
             print (booking_reference)
+            if not booking_reference.isdigit():
+                booking_errors.append({'booking_reference': booking_reference, "message": "Is not a number"})
+                continue                
+                
+
             if parkstay_models.Booking.objects.filter(id=booking_reference).count() > 0:
                 booking = parkstay_models.Booking.objects.get(id=booking_reference)
                 print (booking)
