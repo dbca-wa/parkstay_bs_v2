@@ -73,10 +73,7 @@ class Command(BaseCommand):
                 BookingLog.objects.create(booking=booking,message="Booking Cancelled (Bulk Cancellation)")    
                 booking_cancelled.append({'booking_id': booking.id,'booking_customer': booking.customer, "booking_cancelled" : True })        
                                     
-            try:
-                emails.send_booking_cancelation(booking, extra_data)    
-            except Exception as e:                
-                print ("ERROR: Sending cancellation email")
+
     
            
             # Attemping to refund
@@ -118,12 +115,21 @@ class Command(BaseCommand):
                     #extra_data['totalbooking'] = round(Decimal(totalbooking),2)
                     extra_data['totalbooking'] = round(total_refunded,2)
                     # extra_data['fees_for_cancellation'] = round(Decimal(fees_for_cancellation),2)                            
-                    booking_refunded.append({'booking_id': booking.id, 'amount': str(totalbooking), 'booking_customer': booking.customer.email, 'refund_success': True})                  
+                    booking_refunded.append({'booking_id': booking.id, 'amount': str(totalbooking), 'booking_customer': booking.customer.email, 'refund_success': True})
+                    try:
+                        emails.send_booking_cancelation(booking, extra_data)    
+                    except Exception as e:                
+                        booking_errors.append({'booking_reference': booking_reference, "message": "ERROR: Sending cancellation email"})
+                        print ("ERROR: Sending cancellation email")                              
+                           
 
             except Exception as e:
-                booking_refunded.append({'booking_id': booking.id, 'amount': str(totalbooking), 'booking_customer': booking.customer.email, 'refund_success': False})                  
+                booking_refunded.append({'booking_id': booking.id, 'amount': str(totalbooking), 'booking_customer': booking.customer.email, 'refund_success': False})  
+                booking_errors.append({'booking_reference': booking_reference, "message": "ERROR: Refund Error and Cancel Email Not Sent"})               
                 print ("ERROR: Refund Failed")                                        
                 print (e)
+
+                
 
             cb = parkstay_models.CampsiteBooking.objects.filter(booking=booking)
             for c in cb:
