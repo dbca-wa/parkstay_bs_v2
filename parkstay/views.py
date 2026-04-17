@@ -560,7 +560,8 @@ class MakeBookingsView(TemplateView):
         if request.user.is_authenticated:
             if request.user.is_staff or cp_perms_on_behalf > 0:
                   # searching on EmailIdentity looks for both EmailUser and Profile objects with the email entered by user
-                  customer_qs = EmailIdentity.objects.filter(email__iexact=form.cleaned_data.get('email'))
+                #   customer_qs = EmailIdentity.objects.filter(email__iexact=form.cleaned_data.get('email'))
+                  customer_qs = EmailUser.objects.filter(email__iexact=form.cleaned_data.get('email'))
                   if customer_qs:
                       customer = customer_qs.first().user
                   else:
@@ -1618,3 +1619,14 @@ class PagesView(TemplateView):
             return render(request, self.template_name, content)
         except Page.DoesNotExist:
             return render(request, 'ps/content/page_not_found.html', {'page_slug': page_slug})
+
+
+class BatchRefundCancel(TemplateView):
+    template_name = 'ps/dash/bulk_refund_batch.html'
+
+    def get(self, request, *args, **kwargs):
+        #peakgroups = parkstay_models.PeakGroup.objects.all()
+        #context = {'peakgroups': peakgroups}
+        context = {}
+        response = render(request, self.template_name, context)
+        return response    

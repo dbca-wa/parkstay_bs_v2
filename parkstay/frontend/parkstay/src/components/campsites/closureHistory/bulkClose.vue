@@ -48,14 +48,18 @@
                         </div>
                     </div>
                 </div>
-                <reason-component type="close" ref="reason" name="closure_reason" v-model="reason" :required="true"></reason-component>
+                <reason-component type="close" ref="reason" name="closure_reason" v-model="formdata.reason" :required="true"></reason-component>
+                 
+                requireDetails {{requireDetails.value }}
+                reason {{ formdata.reason }}
+
                 <div v-show="requireDetails" class="row">
                     <div class="form-group">
                         <div class="col-md-2">
                             <label class="form-label required" for="close_bcs_details">Details: </label>
                         </div>
                         <div class="col-md-5">
-                            <textarea name="closure_details" v-model="formdata.details" class="form-control"
+                            <textarea name="details" v-model="formdata.details" class="form-control"
                                 id="close_bcs_details"></textarea>
                         </div>
                     </div>
@@ -79,14 +83,15 @@ const props = defineProps(['campsites'])
 
 const id = ref('')
 const current_closure = ref('')
-const reason = ref('')
+const reason = ref('10')
 const formdata = ref({
     status: 1,
     range_start: '',
     range_end: '',
     closure_reason: '',
     details: '',
-    campsites: [],
+    campsites: [],  
+    reason: -1
 })
 const closeStartPicker = ref(null)
 const closeEndPicker = ref(null)
@@ -100,16 +105,29 @@ const emit = defineEmits(['close', 'bulkCloseCampsites'])
 const showError = computed(function () {
     return errors.value;
 })
-const requireDetails = computed(function () {
-    return formdata.value.closure_reason === 1;
+
+const requireDetails = computed(function () {    
+    // return formdata.value.closure_reason === 1;
+    console.log("RR");
+    console.log(formdata.value.reason );
+    if (formdata.value.reason == 1) { 
+        return (true);
+    } else {
+        return (false);
+    }        
+    // return (formdata.value.reason === 1);
 })
+
+
+
+
 const isModalOpen = computed(function () {
     return isOpen.value;
 })
 
-watch(() => reason.value, (value) => {
-    formdata.value.closure_reason = value;
-})
+// watch(() => reason.value, (value) => {
+//    formdata.value.closure_reason = value;
+// })
 
 watch(() => isOpen.value, (val) => {
     helpers.formUtils.resetFormValidation(form.value)

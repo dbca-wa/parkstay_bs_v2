@@ -498,8 +498,35 @@ class PublicSiteClosureAdmin(admin.ModelAdmin):
       list_filter = ('active',)
       readonly_fields = ['created',]
 
+
+class BulkRefundCanceInline(admin.TabularInline):
+    model = models.BulkRefundCancelList
+    extra = 0
+    readonly_fields = ['bulk_refund_cancel','booking_reference','refund_type','cancel_type','email_type','message','created']
+    list_display = ('bulk_refund_cancel','booking_reference','refund_type','cancel_type','email_type','processed','message','created')   
+    ordering = ('-id',)  
+
+
+
+@admin.register(models.BulkRefundCancel)
+class BulkRefundCancelAdmin(admin.ModelAdmin):
+        list_display = ('id','bulk_name','bulk_status','paused','created_by','created')     
+        ordering = ('-id',)  
+        readonly_fields = ['created',]
+        inlines = [BulkRefundCanceInline,]
+
+@admin.register(models.BulkRefundCancelList)
+class BulkRefundCancelListAdmin(admin.ModelAdmin):
+      list_display = ('id','bulk_refund_cancel','booking_reference','refund_type','cancel_type','email_type','processed','message','completed','created')   
+      ordering = ('-id',)  
+      readonly_fields = ['created',]
+    
+
+
 admin.site.register(models.Rate)
 admin.site.register(models.Region)
 admin.site.register(models.District)
 admin.site.register(models.DiscountReason)
 admin.site.register(models.BookingPolicy)
+
+

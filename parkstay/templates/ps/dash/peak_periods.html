@@ -3,7 +3,7 @@
 {% load forms %}
 {% block content %}
 {% csrf_token %}
-
+{% if request.session.is_authenticated %}
     <div class="container">
         <div class="alert alert-danger" role="alert" id='group-flat-error' style='display:none'>
         </div>
@@ -204,4 +204,11 @@ $( ".peak-group-create" ).click(function() {
 
 
 	</script>
+
+{% else %}
+<div class="container">
+    <div class='alert alert-danger'>Your are currently not authenticated,  please login</div>
+</div>
+{% endif %}     
+
 {% endblock %}

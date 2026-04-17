@@ -11,5 +11,6 @@
 		   "--hostname","parkstayv2-dev"
 		   ],
 	"forwardPorts": [9091,9092,9093,9094,9095,9096,9097,9098,9099],
-	"initializeCommand" : "${localEnv:HOME}/docker-scripts-dev/windows_vbox/postgres_docker_load_2404.sh && ${localEnv:HOME}/docker-scripts-dev/windows_vbox/ledger_docker_load.sh "
+	"initializeCommandOLD" : "${localEnv:HOME}/docker-scripts-dev/windows_vbox/postgres_docker_load_2404.sh && ${localEnv:HOME}/docker-scripts-dev/windows_vbox/ledger_docker_load.sh ",
+	"initializeCommand" : "${localEnv:HOME}/docker-scripts-dev/windows_vbox/postgres_docker_load_2404.sh"
 }

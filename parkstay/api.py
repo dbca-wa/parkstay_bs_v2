@@ -2107,6 +2107,106 @@ def save_peak_group(request,*args, **kwargs):
     return HttpResponse(json.dumps(res), content_type='application/json', status=status)
 
 
+def bulk_refund(request, *args, **kwargs):
+
+    if request.user.is_authenticated:
+         if request.user.is_staff is True:
+              dumped_data = cache.get('BulkRefundCancel')
+              dumped_data = None
+              if dumped_data is None:
+                  item_list = []
+                  item_obj = parkstay_models.BulkRefundCancel.objects.all().order_by('-id')
+                  for i in item_obj:
+                      item_list.append({'id': i.id, 'bulk_name': i.bulk_name,'bulk_status': i.bulk_status,'paused': i.paused, 'created_by': i.created_by, 'created': i.created.strftime("%d/%m/%Y, %H:%M:%S")})                      
+
+                  dumped_data = geojson.dumps(item_list)
+                  cache.set('BulkRefundCancel', dumped_data,  3600)
+         else:
+                  status = 501
+                  res = {"status": status, "message" : "Unauthorised"}
+                  dumped_data = json.dumps(res)
+    else:
+         status = 501
+         res = {"status": status, "message" : "Unauthorised"}
+         dumped_data = json.dumps(res)
+
+    return HttpResponse(dumped_data, content_type='application/json')
+
+def save_bulk_refund_period(request,*args, **kwargs):
+    #print (request.POST)
+    #print (request.POST.get('group_name',None))
+    #import time
+    #time.sleep(2.4)
+    status = 503
+
+    try:
+            if request.user.is_authenticated:
+                if request.user.is_staff is True:
+                    data = json.load(request)
+                    payload = data.get('payload')
+                    action = payload['action']
+                    group_id = None
+
+                    if action == 'save' or action == 'delete':
+                        group_id = payload['group_id']
+                        
+                    bulk_id = payload['bulk_id']
+                    bulk_name = payload['bulk_name']
+                    bulk_refund_cancel_list = payload['bulk_refund_cancel_list']
+                    cancel_booking = payload['cancel_booking']
+                    email_for_booking = payload['email_for_booking']
+                    refund_type= payload['refund_type']
+                    
+                #    peak_status_boolean = False
+
+                #    if peak_status == 'true':
+                #        peak_status_boolean = True
+
+                #    if action == 'save':
+                #         pg = parkstay_models.PeakGroup.objects.get(id=int(group_id))
+                #         pg.name=group_name
+                #         pg.active=peak_status_boolean
+                #         pg.save()
+                #    elif action == 'delete':
+                #         parkstay_models.PeakGroup.objects.filter(id=int(group_id)).delete()
+                #         cache.delete('PeakPeriodGroups')
+                #    else: 
+                    bulk_obj = parkstay_models.BulkRefundCancel.objects.create(bulk_name=bulk_name,bulk_status=0, created_by=request.user.id)
+                    bulk_refund_cancel_list_array = bulk_refund_cancel_list.splitlines()
+                    for brc in bulk_refund_cancel_list_array:
+                        print (brc)
+                        print (len(brc))
+                        if len(brc) > 1:
+                            parkstay_models.BulkRefundCancelList.objects.create(bulk_refund_cancel=bulk_obj,
+                                                                booking_reference=brc,
+                                                                refund_type=refund_type,
+                                                                cancel_type=cancel_booking,
+                                                                email_type=email_for_booking
+                                                                )
+
+
+                        
+
+
+                    status = 200
+                    res = {"status": status, "message" : "Success"}
+
+                else:
+                    status = 501
+                    res = {"status": status, "message" : "Unauthorised"}
+            else:
+                status = 501
+                res = {"status": status, "message" : "Unauthorised"}
+
+
+    except Exception as e:
+         status = 503
+         res = {
+                "status": status, "message": str(e)
+         }
+
+    return HttpResponse(json.dumps(res), content_type='application/json', status=status)
+    
 def booking_policy(request, *args, **kwargs):
     #parkstay_models.BookingPolicy.objects.create(policy_name='Test 3',policy_type=1, amount='0.00', peak_group_id=25)
     if request.user.is_authenticated:
