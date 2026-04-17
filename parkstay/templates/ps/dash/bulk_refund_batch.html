@@ -1,0 +1,244 @@
+{% extends 'ps/base.html' %}
+{% load static %}
+{% load forms %}
+{% block content %}
+{% csrf_token %}
+
+{% if request.session.is_authenticated %}
+
+
+    <div class="container">
+        <div class="alert alert-danger" role="alert" id='refund-cancel-flat-error' style='display:none'>
+        </div>
+        <div class="alert alert-success" role="alert" id='refund-cancel-flat-success' style='display:none'>
+        </div>
+        <div style='padding: 1.5rem; margin-right: 0; margin-left: 0; border-width: 1px; border-top-left-radius: .25rem; border-top-right-radius: .25rem; margin: 1rem -.75rem 0; border: 1px solid #dee2e6;'>
+        <div class='row'>
+            <div class='col-6'>
+               <h3>Booking Batch Refund & Cancellation</h3> 
+            </div>
+            <div class='col-6 text-end'>
+		 <button type="button" class="btn btn-primary create-booking-policy" >Add Bulk Refund</button>
+	    </div>
+        <div class='col-12'>
+		    &nbsp;
+	        </div>
+        </div>
+	<table class="table table-striped">
+        <thead class='table-dark'>
+          <tr>
+            <th scope="col" class='col-1'>#</th>
+            <th scope="col" class='col-7'>Policy Name</th>
+            <th scope="col" class='col-2'>Active</th>
+            <th scope="col" class='col-2'>Action</th>
+          </tr>
+        </thead>
+        <tbody id='booking-refund-cancel-tbody'>		
+        </tbody>
+	</table>
+      </div>
+    </div>
+
+    <script>
+    	  management.var.csrf_token = '{{ csrf_token }}';
+        management.load_booking_refund_cancel_options();
+    	  management.load_booking_refund_cancel();
+    </script>
+
+<div class="modal fade" id="EditBookingPolicyModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" data-bs-backdrop="static" data-backdrop="static" data-keyboard="false">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Bulk Refund / Cancellation </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="alert alert-danger" role="alert" id='booking-policy-popup-error' style='display:none'>
+
+        </div>
+	<div class="alert alert-success" role="alert" id='booking-policy-popup-success' style='display:none'>
+            
+        </div>
+        <form>		
+
+        <div id='booking-policy-details'>
+
+        <div class='col-12 round-box px-3 ' id='normal-policy'>
+            <div class='row'>
+                   <div class='col-12'>
+                        <label for="" class="form-label">Bulk Name</label>
+                        <input type="text" class="form-control" id="bulk-name" value="" autocomplete="off">
+                   </div>
+
+                   <div class='col-12'>
+                      <label for="" class="form-label">Booking ID (list)</label>
+                    	<div class="alert alert-danger" role="alert" id='bulk-cancel-row-limit-exceeded' style='display:none'>
+                                You have exceeded the 20-line limit!
+                      </div>                        
+                      <textarea class="form-control" rows="20" name="bulk-refund-cancel-list" id="bulk-refund-cancel-list"></textarea>
+                   </div>  
+                  
+                  <div class='col-12'>
+                    <label for="message-text" class="col-form-label">Refund Type:</label>
+                    <select class="form-select" aria-label="" id='refund-type'>
+                      <option value=""></option>
+                      <option value="6">No Refund</option>
+                      <option value="0">Full Refund</option>
+                      <option value="1">Partial Refund</option>
+                    </select>
+                  </div> 
+                  
+                  <div class='col-12'>
+                    <label for="message-text" class="col-form-label">Cancel Booking:</label>
+                    <select class="form-select" aria-label="" id='cancel-booking'>
+                      <option value=""></option>
+                      <option value="0">Cancel Booking</option>
+                      <option value="2">Dont't Cancel Booking</option>                      
+                    </select>
+                  </div>                       
+                  <div class='col-12'>
+                    <label for="message-text" class="col-form-label">Email:</label>
+                    <select class="form-select" aria-label="" id='email-for-booking'>
+                      <option value=""></option>
+                      <option value="0">Send Cancel Email</option>
+                      <option value="2">Dont't Send Cancel Email</option>                      
+                    </select>
+                  </div>   
+            </div>
+         </div>
+          
+         <div class='col-12 px-3'>
+                   <div class='col-12'>
+                            <div class='col-12'>
+                            <label for="" class="form-label">&nbsp;</label>
+                            </div>
+                            <div class='col-12 text-end'>
+                              <button type="button" class="btn btn-secondary" id="group-close-modal" data-bs-dismiss="modal">Close</button>
+		            <button type="button" class="btn btn-primary booking-refund-cancel-save" id='create-policy-btn' button-data='{"action": "create"}'>Create</button>
+                            <button type="button" class="btn btn-primary booking-refund-cancel-save" id='save-policy-btn' button-data='{"action": "save"}'>Save</button>
+                            &nbsp;&nbsp;
+                            <div class="spinner-border text-primary" role="status" style="display:none" id="bookingpolicy-loader-popup">
+                                 <span class="visually-hidden">Loading...</span>
+                            </div>&nbsp;&nbsp;&nbsp;
+                            </div>
+                   </div>
+            </div>
+        </div>         
+      </div>
+      </form>
+ 
+      <div class="modal-footer">
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+$('#bulk-refund-cancel-list').on('input', function() {
+    var lines = $(this).val().split('\n').length;
+    
+    if (lines > 2) {
+        $("#bulk-cancel-row-limit-exceeded").show();        
+    } else {
+        $("#bulk-cancel-row-limit-exceeded").hide();
+    }
+});
+
+
+$( ".create-booking-policy" ).click(function() {
+management.var.booking_policy_id_selected = null;
+
+$('#create-policy-btn').show();
+$('#save-policy-btn').hide();	
+
+var nopolicy = $('#no-policy');
+var policyname = $('#policy-name');
+var policytype = $('#policy-type');
+var policyamount = $('#policy-amount');
+var policygracetime = $('#policy-grace-time');
+var peakpolicyenabled = $('#peak-policy-enabled');
+var peakpolicytype = $('#peak-policy-type');
+var peakpolicygroup = $('#peak-policy-group');
+var peakpolicyamont = $('#peak-policy-amont');
+var peakpolicygracetime = $('#peak-policy-grace-time');
+var policyactive = $('#policy-active');
+
+nopolicy.val("");
+policyname.val("");
+policytype.val("");
+policyamount.val("");
+policygracetime.val("0");
+peakpolicyenabled.prop('checked', false);
+peakpolicytype.val("");
+peakpolicygroup.val("");
+peakpolicyamont.val("");
+peakpolicygracetime.val("");
+policyactive.val("true");	
+
+nopolicy.prop('disabled', false);
+policyname.prop('disabled', false);
+policytype.prop('disabled', false);
+policyamount.prop('disabled', false);
+policygracetime.prop('disabled', false);
+peakpolicyenabled.prop('disabled', false);
+peakpolicytype.prop('disabled', false);
+peakpolicygroup.prop('disabled', false);
+peakpolicyamont.prop('disabled', false);
+peakpolicygracetime.prop('disabled', false);
+policyactive.prop('disabled', false);
+$('#peak-policy-options').hide();
+$('#EditBookingPolicyModal').modal('show');
+});
+
+$( ".booking-refund-cancel-save" ).click(function() {
+          console.log('booking-policy-save');
+          var buttondata = $(this)[0].attributes['button-data'].value;
+          var buttondata_obj = JSON.parse(buttondata);
+
+          console.log(buttondata);
+          management.save_booking_refund_cancel(buttondata_obj);
+});
+
+$("#peak-policy-enabled").click(function() {
+        console.log('pci');
+	var display_value = $("#peak-policy-options").css('display');
+	if (display_value == 'none') { 
+		$("#peak-policy-options").show();
+	} else {
+		$("#peak-policy-options").hide();
+		console.log(display_value);
+	}
+});
+
+$("#no-policy").click(function() {
+
+        var nopolicy_check = $("#no-policy").prop('checked');
+        var policyname = $('#policy-name');
+	var policytype = $('#policy-type');
+
+
+        if (nopolicy_check == true) { 
+           $('#booking-policy-details').hide();
+	   policyname.val("No Policy");
+	   policytype.val(0);
+
+
+        } else {
+ 	   $('#booking-policy-details').show();
+	   policyname.val("");
+        }
+
+});
+
+
+
+	</script>
+
+
+{% else %}
+<div class="container">
+    <div class='alert alert-danger'>Your are currently not authenticated,  please login</div>
+</div>
+{% endif %}
+
+{% endblock %}

@@ -4,6 +4,7 @@
 {% block content %}
 {% csrf_token %}
 
+{% if request.session.is_authenticated %}
     <div class="container">
         <div class="alert alert-danger" role="alert" id='booking-policy-flat-error' style='display:none'>
         </div>
@@ -38,7 +39,7 @@
 
     <script>
     	management.var.csrf_token = '{{ csrf_token }}';
-        management.load_booking_policy_options();
+     management.load_booking_policy_options();
     	management.load_booking_policys();
     </script>
 
@@ -282,4 +283,10 @@ $("#no-policy").click(function() {
 
 
 	</script>
+
+{% else %}
+<div class="container">
+    <div class='alert alert-danger'>Your are currently not authenticated,  please login</div>
+</div>
+{% endif %}     
 {% endblock %}

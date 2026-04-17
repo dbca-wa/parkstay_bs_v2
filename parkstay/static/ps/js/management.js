@@ -1,19 +1,22 @@
 var management = {
     var: {
-	'csrf_token': null,
-	'test': 'test',	  
+	    'csrf_token': null,
+	    'test': 'test',	  
         'peak_groups': [], 
+        'bulk_refund_cancel' : [],
         'peak_groups_url': '/api/peak_groups/',
         'peak_groups_save_url' : '/api/save_peak_group/',
         'peak_periods_url': '/api/peak_periods/',
         'peak_period_save_url': '/api/save_peak_period/',
+        'bulk_refund_url': '/api/bulk_refund/',
+        'bulk_refund_save_url': '/api/save_bulk_refund_period/',        
         //'peak_periods_save_url' : '',
-	'booking_policy_url': '/api/booking_policy/',
+	    'booking_policy_url': '/api/booking_policy/',
         'booking_policy_save_url' : '/api/save_booking_policy/',
-	'booking_policy_id_selected': null,
+	    'booking_policy_id_selected': null,
         'peak_period_collapsed_id' : null,
         'peak_group_collapsed_id' : null,
-	'peak_group_id_selection' : null
+	    'peak_group_id_selection' : null
     },
     load_peak_periods: function(peakgroup_id) {
 	        console.log('load_peak_periods');
@@ -142,6 +145,143 @@ var management = {
                     // data: "{}",
                     success: function (response) {
                           management.var.peak_groups = response;
+                    },
+                    error: function (error) {
+                        console.log('Error loading peak groups');
+                    },
+                });
+    },
+    load_booking_refund_cancel_options: function() {         
+                $.ajax({
+                    url: management.var.bulk_refund_url,
+                    method: 'GET',
+                    dataType: 'json',
+                    contentType: 'application/json',
+                    // data: "{}",
+                    success: function (response) {
+                          management.var.bulk_refund_cancel = response;
+                    },
+                    error: function (error) {
+                        console.log('Error loading bulk refund cancel');
+                    },
+                });
+    },
+    load_booking_refund_cancel: function() {
+        
+	        $('#booking-refund-cancel-tbody').html('<tr><td colspan=5 align="center"><div class="spinner-border text-primary" role="status"> <span class="visually-hidden">Loading...</span></div></td></tr>');
+	        $('#peakgroup_progress_loader').hide();
+	        $("#group-name").prop('disabled', false);
+	        $('#peak-status').prop('disabled', false);
+
+                $.ajax({
+                    url: management.var.bulk_refund_url,
+                    method: 'GET',
+                    dataType: 'json',
+                    contentType: 'application/json',
+                    // data: "{}",
+                    success: function (response) {
+			var html ='';
+			if (response.length > 0) { 
+                            for (let i = 0; i < response.length; i++) {
+                                    html+= "<tr>";
+                                    html+= " <td>"+response[i].id+"</td>";
+                                    html+= "      <td>"+response[i].bulk_name+"</td>";
+                                    html+= "      <td>";
+
+                                    if (response[i].paused == true) {
+                                        html+= '        <i style="color: #5614a1" class="bi bi-stop-circle-fill"></i>';
+                                    } else {
+
+                                        if (response[i].bulk_status == 2) {
+                                            html+= '        <i style="color: #00f300" class="bi bi-check-circle-fill"></i>';
+                                        } else if (response[i].bulk_status == 1) {
+                                            html+= '        <i style="color: #0229d4" class="bi bi-play-circle-fill"></i>';
+                                        } else if (response[i].bulk_status == 0) {
+                                            html+= '        <i style="color: #f5c730" class="bi bi-dash-circle-fill"></i>';                                        
+                                        } else {
+                                            html+= '        <i style="color: #f30000" class="bi bi-x-circle-fill"></i>';
+                                        }
+                                    }
+
+                                    html+= "           </td>";
+                                    html+= "           <td class='text-end'>";
+                                    var data_button = '{"id": '+response[i].id+'}';
+                                    var data_button_delete = '{"group_id": '+response[i].id+', "action": "delete"}';
+                                    html+= "          <button type='button' class='btn btn-primary btn-sm' data-bs-backdrop='static' data-keyboard='false' data-bs-toggle='modal' data-bs-target='#ViewPeakPeriodModal' data-button='"+data_button+"' >Check Processing</button>";                                    
+				                    html+= "           <button class='btn btn-danger btn-sm peakgroupsave' button-data='"+data_button_delete+"' >Pause</button>";
+                                    html+= '&nbsp;&nbsp;<div class="spinner-border text-primary" role="status" style="display:none" id="peakgroup-loader-'+response[i].id+'">';
+                                    html+= '<span class="visually-hidden">Loading...</span>';
+                                    html+= '</div>';
+
+                                    html+= "           </td>";
+                                    html+= "       </tr>";
+                                  
+                                    // save start
+                                    html+= "<tr style='display:none' id='pg-rowcollapse-"+response[i].id+"'>";
+                                    html+= "<td>";
+                                    html+= "&nbsp;";
+                                    html+= "</td>";
+
+                                    html+= "<td>";
+                                    html+= '<input type="text" class="form-control" id="row-group-name-'+response[i].id+'" value="'+response[i].name+'">';
+                                    html+= "</td>";
+                                    html+= "<td>";
+                                    html+= "";
+                                    html+= '<select class="form-select" aria-label="" id="row-group-active-'+response[i].id+'">';
+                                    html+= '<option value="true"';
+
+                                    if (response[i].active == true) {
+                                        html+= ' selected ';
+                                    }
+
+                                    html+= '>Active</option>';
+                                    html+= '<option value="false"';
+                                    if (response[i].active == false) {
+                                        html+= ' selected ';
+                                    }
+
+                                    html+= '>Inactive</option>';
+                                    html+= '</select>';
+                                    html+= "</td>";
+                                    html+= "<td align='right'>";
+
+                                    var buttondata='{"group_id": '+response[i].id+', "action": "save"}';
+                                    //html+= '<div class="spinner-border text-primary" role="status" style="display:none" id="peakgroup-loader-'+response[i].id+'">';
+                                    //html+= '<span class="visually-hidden">Loading...</span>';
+                                    //html+= '</div>&nbsp;&nbsp;&nbsp;';
+                                    html+= "<button type='button' class='btn btn-success btn-sm peakgroupsave' button-data='"+buttondata+"' >Save</button>";
+                                    html+= "</td>";
+                                    html+= "</tr>";
+                                    // save end
+		            }
+
+			    $('#booking-refund-cancel-tbody').html(html);
+
+                            $(".peakgroup-row" ).click(function() {
+
+                                  if (management.var.peak_group_collapsed_id != null) {
+                                          $('#pg-rowcollapse-'+management.var.peak_group_collapsed_id).hide();
+                                  }
+
+                                  console.log($(this)[0].attributes);
+                                  var buttondata = $(this)[0].attributes['data-button'].value;
+                                  var buttondata_obj = JSON.parse(buttondata);
+                                  $('#pg-rowcollapse-'+buttondata_obj['id']).show();
+                                  management.var.peak_group_collapsed_id = buttondata_obj['id'];
+                            });
+
+                            $(".peakgroupsave" ).click(function() {
+                                      console.log('peakgroupsave');
+                                      var buttondata = $(this)[0].attributes['button-data'].value;
+                                      var buttondata_obj = JSON.parse(buttondata);
+
+                                      console.log(buttondata);
+                                      management.save_peak_group(buttondata_obj);
+                            });
+
+		 	} else {
+				$('#peak-groups-tbody').html("<tr><td colspan='4' class='text-center'>No results found<td></tr>");
+			}
                     },
                     error: function (error) {
                         console.log('Error loading peak groups');
@@ -734,6 +874,86 @@ var management = {
 
 	     //$('#close-modal').click();
     },	    
+    save_booking_refund_cancel: function(buttondata_obj) {
+
+	    var bulk_id = null;
+        var bulk_name = {'val': function(){return ''}, 'prop': function(){return false} };
+	    var bulk_refund_cancel_list = {'val': function(){return ''}, 'prop': function(){return false}};
+        var refund_type = {'val': function(){return ''}, 'prop': function(){return false}};
+        var cancel_booking = {'val': function(){return ''}, 'prop': function(){return false}};
+        var email_for_booking = {'val': function(){return ''}, 'prop': function(){return false}};
+	    var bulk_progress_loader = null;
+            
+        if (buttondata_obj['action'] == 'create') {
+	        bulk_name = $('#bulk-name');
+            bulk_refund_cancel_list = $('#bulk-refund-cancel-list');		    
+            refund_type = $('#refund-type');
+            cancel_booking = $('#cancel-booking');
+            email_for_booking = $('#email-for-booking');
+
+            bulk_progress_loader = $('#peakgroup_progress_loader_create');
+        
+        var data = {'action': buttondata_obj['action'], 'bulk_id': bulk_id, 'bulk_name' : bulk_name.val(), 'refund_type' : refund_type.val(), 'cancel_booking': cancel_booking.val(), 'email_for_booking': email_for_booking.val(),'bulk_refund_cancel_list': bulk_refund_cancel_list.val()};
+	    
+        $('#pg-rowcollapse-'+bulk_id).hide();
+        bulk_progress_loader.show();
+        bulk_name.prop('disabled', true);
+        bulk_refund_cancel_list.prop('disabled', true);
+
+        refund_type.prop('disabled', true);
+        cancel_booking.prop('disabled', true);
+        email_for_booking.prop('disabled', true);
+
+        $('#refund-cancel-flat-success').hide();
+        $('#refund-cancel-flat-error').hide();
+        $('#popup-error').hide();
+
+        $.ajax({
+            url: management.var.bulk_refund_save_url,
+            method: "POST",  
+            headers: {'X-CSRFToken':management.var.csrf_token},
+            data: JSON.stringify({'payload': data,}),
+            contentType: "application/json",
+            success: function(data) {
+    	        bulk_progress_loader.hide();
+	    	    bulk_name.prop('disabled', false);
+		        bulk_refund_cancel_list.prop('disabled', false);
+                refund_type.prop('disabled', false);
+                cancel_booking.prop('disabled', false);
+                email_for_booking.prop('disabled', false);
+
+		        management.load_peak_groups();
+
+                $('#group-close-modal').click();
+		        $('#refund-cancel-flat-success').html("Successfull");
+		        $('#refund-cancel-flat-success').show();
+                       // alert(JSON.stringify(data));
+                },
+                error: function(errMsg) {
+	    	    bulk_name.prop('disabled', false);
+		        bulk_refund_cancel_list.prop('disabled', false);
+                refund_type.prop('disabled', false);
+                cancel_booking.prop('disabled', false);
+                email_for_booking.prop('disabled', false);
+		        bulk_progress_loader.hide();
+
+                if (buttondata_obj['action'] == 'save') { 
+			        $('#refund-cancel-flat-error').html(errMsg.responseJSON.message);
+                    $('#refund-cancel-flat-error').show();
+			        $('#pg-rowcollapse-'+management.var.peak_group_collapsed_id).show();
+	            } else if (buttondata_obj['action'] == 'delete') {
+			        $('#refund-cancel-flat-error').html(errMsg.responseJSON.message);
+			        $('#refund-cancel-flat-error').show();
+                } else {
+		            $('#popup-error').html(errMsg.responseJSON.message);
+		            $('#popup-error').show();
+		        }
+            }
+
+             });
+        }
+
+    },	
     init: function() {
     }
 }

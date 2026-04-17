@@ -2505,3 +2505,67 @@ class PublicSiteClosure(models.Model):
         super(PublicSiteClosure, self).save(*args, **kwargs)
         cache.delete('utils_cache.public_site_closure()')
         self.full_clean()
+
+
+
+class BulkRefundCancel(models.Model):
+
+        BULK_STATUS_CHOICES = (
+            (0, 'Pending'),
+            (1, 'Running'),
+            (2, 'Completed') ,
+            (3, 'Failed')   
+        )    
+
+        bulk_name = models.CharField(max_length=255, unique=True)
+        bulk_status = models.IntegerField(choices=BULK_STATUS_CHOICES,default=0)
+        paused = models.BooleanField(default=False)
+        created_by = models.IntegerField(blank=True, null=True)
+        created = models.DateTimeField(default=timezone.now)
+     
+        def __str__(self):
+            return self.bulk_name
+
+
+        def save(self, *args, **kwargs):
+            self.full_clean()
+            super(BulkRefundCancel, self).save(*args, **kwargs)
+
+class BulkRefundCancelList(models.Model):
+
+    REFUND_TYPE_CHOICES = (
+        (0, 'Pending Full Refund'),
+        (1, 'Pending Partial Refund'),
+        (2, 'Full Refund Completed') ,
+        (3, 'Partial Refund Completed'),   
+        (4, 'Full Refund Failed'),
+        (5, 'Partial Refund Failed'),
+        (6, 'Not Required')   
+    )
+
+    CANCEL_TYPE_CHOICES = (
+        (0, 'Cancel Booking'),
+        (1, 'Cancel Booking Completed'),
+        (2, 'Not Required'),        
+        (3, 'Cancel Booking Failed')
+    )   
+
+    EMAIL_TYPE_CHOICES = (
+        (0, 'Cancel Booking Email'),
+        (1, 'Cancel Booking Sent'),
+        (2, 'Not Required'),        
+        (3, 'Cancel Booking Email Failed')
+    )        
+
+    bulk_refund_cancel = models.ForeignKey('BulkRefundCancel', on_delete=models.PROTECT, related_name='bulkrefundcancel')
+    booking_reference = models.CharField(max_length=255, null=True, blank=True, default='')
+    refund_type = models.IntegerField(choices=REFUND_TYPE_CHOICES,default=0)
+    cancel_type = models.IntegerField(choices=CANCEL_TYPE_CHOICES,default=0)
+    email_type = models.IntegerField(choices=EMAIL_TYPE_CHOICES,default=0)
+    message = models.TextField(null=True, blank=True)
+    processed = models.BooleanField(default=False)
+    completed = models.DateTimeField(null=True, blank=True)
+    created = models.DateTimeField(default=timezone.now)
+
+    def __str__(self):
+        return "{}".format(self.id)
