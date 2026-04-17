@@ -50,9 +50,6 @@
                 </div>
                 <reason-component type="close" ref="reason" name="closure_reason" v-model="formdata.reason" :required="true"></reason-component>
                  
-                requireDetails {{requireDetails.value }}
-                reason {{ formdata.reason }}
-
                 <div v-show="requireDetails" class="row">
                     <div class="form-group">
                         <div class="col-md-2">
