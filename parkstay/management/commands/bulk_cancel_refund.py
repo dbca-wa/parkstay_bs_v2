@@ -50,6 +50,8 @@ class Command(BaseCommand):
                 else:
                     print ("Booking Not Found")
                     b_obj.message = "ERROR: Booking Not Found"
+                    b_obj.processed = True       
+                    b_obj.completed = datetime.now()                       
                     b_obj.save()
                     continue
 
