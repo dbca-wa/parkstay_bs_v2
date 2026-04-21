@@ -64,16 +64,7 @@ class Command(BaseCommand):
                             
                     b_obj.cancel_type = 1
                     b_obj.save()                        
-                    if b.email_type == 0:
-                        try:
-                            emails.send_booking_cancelation(booking, extra_data)
-                            b_obj.email_type = 1
-                            b_obj.save()   
-                        except Exception as e:
-                            b_obj.email_type = 3
-                            b_obj.message = "ERROR: Sending cancellation email ({})".format(str(e))
-                
-                            b_obj.save()
+
                             
 
                       
@@ -138,6 +129,8 @@ class Command(BaseCommand):
                                 b_obj.refund_type = 2
                                 b_obj.save()                                
 
+
+
                     except Exception as e:
                         if b.refund_type == 1:
                             b_obj.refund_type = 5
@@ -149,6 +142,28 @@ class Command(BaseCommand):
                             b_obj.save()         
                                          
                         print (e)
+
+                if b.email_type == 0:
+                    if booking.is_canceled is True:
+                        try:
+                            extra_data = {}
+                            total_refunded = Decimal('0.00')
+                            for order_line in lines:
+                                total_refunded = total_refunded + Decimal(order_line['price_incl_tax'])
+                            total_refunded = total_refunded - total_refunded - total_refunded 
+                            #extra_data['totalbooking'] = round(Decimal(totalbooking),2)
+                            extra_data['totalbooking'] = round(total_refunded,2)
+                            extra_data['fees_for_cancellation'] = round(Decimal(fees_for_cancellation),2)
+
+                            emails.send_booking_cancelation(booking, extra_data)
+                            b_obj.email_type = 1
+                            b_obj.save()   
+                        except Exception as e:
+                            b_obj.email_type = 3
+                            b_obj.message = "ERROR: Sending cancellation email ({})".format(str(e))
+                
+                            b_obj.save()
+
 
                 cb = parkstay_models.CampsiteBooking.objects.filter(booking=booking)
                 for c in cb:
