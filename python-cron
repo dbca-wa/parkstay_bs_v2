@@ -32,4 +32,4 @@
 1 0 * * *  /bin/log_rotate.sh  >> /app/logs/log_rotate.log 2>&1
 
 # Process Bulk Refund
-*/5 * * * * python /app/manage.py bulk_cancel_refund >> /app/logs/bulk_cancel_refund.log 2>&1
+*/5 * * * * run-one python /app/manage.py bulk_cancel_refund >> /app/logs/bulk_cancel_refund.log 2>&1
