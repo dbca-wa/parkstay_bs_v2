@@ -2111,20 +2111,23 @@ def bulk_refund(request, *args, **kwargs):
 
     if request.user.is_authenticated:
          if request.user.is_staff is True:
-              dumped_data = cache.get('BulkRefundCancel')
-              dumped_data = None
-              if dumped_data is None:
-                  item_list = []
-                  item_obj = parkstay_models.BulkRefundCancel.objects.all().order_by('-id')
-                  for i in item_obj:
-                      item_list.append({'id': i.id, 'bulk_name': i.bulk_name,'bulk_status': i.bulk_status,'paused': i.paused, 'created_by': i.created_by, 'created': i.created.strftime("%d/%m/%Y, %H:%M:%S")})                      
+            parkstay_officers = ledger_api_utils.user_in_system_group(request.session['user_obj']['user_id'],'Parkstay Officers')        
+        
+            if (request.user.is_staff and parkstay_officers) or request.user.is_superuser:             
+                dumped_data = cache.get('BulkRefundCancel')
+                dumped_data = None
+                if dumped_data is None:
+                    item_list = []
+                    item_obj = parkstay_models.BulkRefundCancel.objects.all().order_by('-id')
+                    for i in item_obj:
+                        item_list.append({'id': i.id, 'bulk_name': i.bulk_name,'bulk_status': i.bulk_status,'paused': i.paused, 'created_by': i.created_by, 'created': i.created.strftime("%d/%m/%Y, %H:%M:%S")})                      
 
-                  dumped_data = geojson.dumps(item_list)
-                  cache.set('BulkRefundCancel', dumped_data,  3600)
+                    dumped_data = geojson.dumps(item_list)
+                    cache.set('BulkRefundCancel', dumped_data,  3600)
          else:
-                  status = 501
-                  res = {"status": status, "message" : "Unauthorised"}
-                  dumped_data = json.dumps(res)
+                status = 501
+                res = {"status": status, "message" : "Unauthorised"}
+                dumped_data = json.dumps(res)
     else:
          status = 501
          res = {"status": status, "message" : "Unauthorised"}
