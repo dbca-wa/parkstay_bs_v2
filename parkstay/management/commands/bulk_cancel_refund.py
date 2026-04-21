@@ -71,7 +71,7 @@ class Command(BaseCommand):
                             b_obj.save()   
                         except Exception as e:
                             b_obj.email_type = 3
-                            b_obj.message = "ERROR: Sending cancellation email"
+                            b_obj.message = "ERROR: Sending cancellation email ({})".format(e)
                 
                             b_obj.save()
                             
@@ -141,11 +141,11 @@ class Command(BaseCommand):
                     except Exception as e:
                         if b.refund_type == 1:
                             b_obj.refund_type = 5
-                            b_obj.message = b_obj.message + "\nERROR: Refund Failed"
+                            b_obj.message = b_obj.message + "\nERROR: Refund Failed ({})".format(e)
                             b_obj.save()
                         if b.refund_type == 0:
                             b_obj.refund_type = 4
-                            b_obj.message = b_obj.message + "\nERROR: Refund Failed"
+                            b_obj.message = b_obj.message + "\nERROR: Refund Failed ({})".format(e)
                             b_obj.save()         
                                          
                         print (e)
