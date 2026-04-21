@@ -563,7 +563,7 @@ class MakeBookingsView(TemplateView):
                 #   customer_qs = EmailIdentity.objects.filter(email__iexact=form.cleaned_data.get('email'))
                   customer_qs = EmailUser.objects.filter(email__iexact=form.cleaned_data.get('email'))
                   if customer_qs:
-                      customer = customer_qs.first().user
+                      customer = customer_qs.first()
                   else:
                       customer = EmailUser.objects.create(
                               email=form.cleaned_data.get('email').lower(),
