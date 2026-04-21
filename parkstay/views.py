@@ -1621,12 +1621,18 @@ class PagesView(TemplateView):
             return render(request, 'ps/content/page_not_found.html', {'page_slug': page_slug})
 
 
-class BatchRefundCancel(TemplateView):
+class BatchRefundCancel(LoginRequiredMixin, TemplateView):
     template_name = 'ps/dash/bulk_refund_batch.html'
 
     def get(self, request, *args, **kwargs):
         #peakgroups = parkstay_models.PeakGroup.objects.all()
         #context = {'peakgroups': peakgroups}
-        context = {}
-        response = render(request, self.template_name, context)
-        return response    
+        parkstay_officers = ledger_api_utils.user_in_system_group(request.session['user_obj']['user_id'],'Parkstay Officers')        
+        
+        if (request.user.is_staff and parkstay_officers) or request.user.is_superuser:        
+
+            context = {}
+            response = render(request, self.template_name, context)
+            return response    
+        else:
+            return HttpResponse("Access Denied", status_code=401)
