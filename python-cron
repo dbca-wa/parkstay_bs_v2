@@ -30,3 +30,6 @@
 30 3 * * * python3 /app/manage.py clearsessions >> /app/logs/clearsessions.log 2>&1
 
 1 0 * * *  /bin/log_rotate.sh  >> /app/logs/log_rotate.log 2>&1
+
+# Process Bulk Refund
+*/5 * * * * python /app/manage.py bulk_cancel_refund >> /app/logs/bulk_cancel_refund.log 2>&1
