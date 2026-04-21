@@ -36,7 +36,7 @@ class Command(BaseCommand):
             request = factory.get('/', data={'debug': 'true'})
             request.user = EmailUser.objects.get(id=r.created_by)
             print(request.user.is_authenticated)
-            bfcl = parkstay_models.BulkRefundCancelList.objects.filter(bulk_refund_cancel=r, processed=False)
+            bfcl = parkstay_models.BulkRefundCancelList.objects.filter(bulk_refund_cancel=r, processed=False).order_by('-pk')[:100]
             for b in bfcl:
                 # print (b.booking_reference)
                 b_obj = parkstay_models.BulkRefundCancelList.objects.get(id=b.id)
@@ -170,6 +170,11 @@ class Command(BaseCommand):
                 b_obj.completed = datetime.now()      
                 b_obj.save()
 
+
+            bfcl_total = parkstay_models.BulkRefundCancelList.objects.filter(bulk_refund_cancel=r, processed=False).count()
+            if bfcl_total == 0:
+                r.bulk_status = 2
+                r.save()                
 
         # Send email with success and failed refunds 
         
