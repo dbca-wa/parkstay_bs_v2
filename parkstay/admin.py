@@ -520,6 +520,7 @@ class BulkRefundCancelListAdmin(admin.ModelAdmin):
       list_display = ('id','bulk_refund_cancel','booking_reference','refund_type','cancel_type','email_type','processed','message','completed','created')   
       ordering = ('-id',)  
       readonly_fields = ['created',]
+      list_filter = ('refund_type','cancel_type','email_type',)
     
 
 
