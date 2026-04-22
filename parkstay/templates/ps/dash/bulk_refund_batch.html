@@ -73,7 +73,7 @@
                    <div class='col-12'>
                       <label for="" class="form-label">Booking ID (list)</label>
                     	<div class="alert alert-danger" role="alert" id='bulk-cancel-row-limit-exceeded' style='display:none'>
-                                You have exceeded the 20-line limit!
+                                You have exceeded the 500-line limit!
                       </div>                        
                       <textarea class="form-control" rows="20" name="bulk-refund-cancel-list" id="bulk-refund-cancel-list"></textarea>
                    </div>  
@@ -137,7 +137,7 @@
 $('#bulk-refund-cancel-list').on('input', function() {
     var lines = $(this).val().split('\n').length;
     
-    if (lines > 2) {
+    if (lines > 500) {
         $("#bulk-cancel-row-limit-exceeded").show();        
     } else {
         $("#bulk-cancel-row-limit-exceeded").hide();
