@@ -132,13 +132,15 @@ class Command(BaseCommand):
 
 
                     except Exception as e:
+                        if b_obj.message is None:
+                            b_obj.message = ''
                         if b.refund_type == 1:
                             b_obj.refund_type = 5
-                            b_obj.message = b_obj.message + "\nERROR: Refund Failed ({})".format(str(e))
+                            b_obj.message = str(b_obj.message) + "\nERROR: Refund Failed ({})".format(str(e))
                             b_obj.save()
                         if b.refund_type == 0:
                             b_obj.refund_type = 4
-                            b_obj.message = b_obj.message + "\nERROR: Refund Failed ({})".format(str(e))
+                            b_obj.message = str(b_obj.message) + "\nERROR: Refund Failed ({})".format(str(e))
                             b_obj.save()         
                                          
                         print (e)
