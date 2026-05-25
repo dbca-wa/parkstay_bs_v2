@@ -67,10 +67,11 @@ numpy~=2.4.0
 setuptools==80.9.0
 wheel~=0.46.0
 git+https://github.com/dbca-wa/wagov_utils
-idna==3.7
+idna>=3.15
 sentry-sdk~=2.19.0
 pytz==2024.1
 python-decouple==3.8
-urllib3~=2.6.0
+urllib3>=2.7.0
 sqlparse~=0.5.5
 imghdr-lts==1.0.0
+pillow>=12.2.0
