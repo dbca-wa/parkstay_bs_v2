@@ -90,6 +90,10 @@ class Park(models.Model):
     wkb_geometry = models.PointField(srid=4326, blank=True, null=True)
     zoom_level = models.IntegerField(choices=ZOOM_LEVEL,default=0)
     active = models.BooleanField(default=True)
+    custom_acknowledgment = models.TextField(
+        blank=True, default='',
+        help_text='If set, users must check this acknowledgment before proceeding with a booking.'
+    )
 
     def __str__(self):
         return '{} - {}'.format(self.name, self.district)
