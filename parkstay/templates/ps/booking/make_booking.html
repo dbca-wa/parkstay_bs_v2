@@ -777,12 +777,16 @@ We may ask for proof of identity. Bookings are not transferable and you cannot b
                                         <label><input type="checkbox" v-bind:value="toc"   name='toc' v-model="toc">I agree to the <a target="_blank" href="http://exploreparks.dbca.wa.gov.au/online-campsite-booking-terms-and-conditions">terms and conditions</a></label>
                                     </div>
 
+                                    <input type="hidden" name="trav_res" value="true">
+
+                                    {% if custom_acknowledgment %}
                                     <div class="checkbox">
-                                        <label><input type="checkbox" v-bind:value="trav_res"   name='trav_res' v-model="trav_res">I understand the facilities provided at, and the rules and safety and health advice for this campground.</label>
+                                        <label><input type="checkbox" name="custom_acknowledgment" v-model="custom_acknowledgment_checked">{{ custom_acknowledgment }}</label>
                                     </div>
+                                    {% endif %}
                                     <br>
 
-				    <button :disabled="!toc||!trav_res" type="submit" class="btn btn-primary btn-lg"><span v-if="total<0" >PROCEED</span><span v-else-if="total==0">PROCEED</span><span v-else >PROCEED</span></button>
+				    <button :disabled="!toc || (has_custom_acknowledgment && !custom_acknowledgment_checked)" type="submit" class="btn btn-primary btn-lg"><span v-if="total<0" >PROCEED</span><span v-else-if="total==0">PROCEED</span><span v-else >PROCEED</span></button>
                                     {% if request.user.is_staff is True or create_booking_on_behalf is True %}
 				              {% if PARKSTAY_PERMISSIONS.special_permissions is True %}
 					      <br><br>
@@ -937,7 +941,8 @@ We may ask for proof of identity. Bookings are not transferable and you cannot b
             vehicleCount: 1,
             toc: false,
             outsideregion: false,
-            trav_res: false,
+            has_custom_acknowledgment: {% if custom_acknowledgment %}true{% else %}false{% endif %},
+            custom_acknowledgment_checked: false,
 	    no_payment: false,
             customer_managed_booking_disabled: false,
    	    max_vehicles: {% if campsite.max_vehicles > 0 %}{{ campsite.max_vehicles }}{% else %}0{% endif %},
