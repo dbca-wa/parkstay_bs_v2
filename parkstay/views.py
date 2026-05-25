@@ -490,6 +490,7 @@ class MakeBookingsView(TemplateView):
         booking.details['trav_res'] = request.POST.get('trav_res', False)
         booking.details['no_payment'] = request.POST.get('no_payment', False)
         booking.details['custom_acknowledgment'] = request.POST.get('custom_acknowledgment', False)
+        booking.details['custom_acknowledgment_text'] = request.POST.get('custom_acknowledgment_text', '')
         
         if customer_managed_booking_disabled == 'true':
             booking.customer_managed_booking_disabled = True
