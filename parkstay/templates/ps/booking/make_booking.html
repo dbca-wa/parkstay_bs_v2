@@ -774,14 +774,14 @@ We may ask for proof of identity. Bookings are not transferable and you cannot b
                                   <div class="alert alert-info" style='min-height: 250px'>
 
                                     <div class="checkbox">
-                                        <label><input type="checkbox" v-bind:value="toc"   name='toc' v-model="toc">I agree to the <a target="_blank" href="http://exploreparks.dbca.wa.gov.au/online-campsite-booking-terms-and-conditions">terms and conditions</a></label>
+                                        <label><input type="checkbox" v-bind:value="toc"   name='toc' v-model="toc"> I agree to the <a target="_blank" href="http://exploreparks.dbca.wa.gov.au/online-campsite-booking-terms-and-conditions">terms and conditions</a></label>
                                     </div>
 
                                     <input type="hidden" name="trav_res" value="true">
 
                                     {% if custom_acknowledgment %}
                                     <div class="checkbox">
-                                        <label><input type="checkbox" name="custom_acknowledgment" v-model="custom_acknowledgment_checked">{{ custom_acknowledgment }}</label>
+                                        <label><input type="checkbox" name="custom_acknowledgment" v-model="custom_acknowledgment_checked"> {{ custom_acknowledgment }}</label>
                                     </div>
                                     <input type="hidden" name="custom_acknowledgment_text" value="{{ custom_acknowledgment }}">
                                     {% endif %}
