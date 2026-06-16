@@ -330,7 +330,7 @@ class MakeBookingsView(TemplateView):
         if context['allow_price_override'] is True: 
              override_reasons = parkstay_models.DiscountReason.objects.all()
 
-        custom_acknowledgment = booking.campground.park.custom_acknowledgment if booking else ''
+        custom_acknowledgment = booking.campground.custom_acknowledgment if booking else ''
 
         return render(request, self.template_name, {
             'form': form, 

@@ -90,10 +90,6 @@ class Park(models.Model):
     wkb_geometry = models.PointField(srid=4326, blank=True, null=True)
     zoom_level = models.IntegerField(choices=ZOOM_LEVEL,default=0)
     active = models.BooleanField(default=True)
-    custom_acknowledgment = models.TextField(
-        blank=True, default='',
-        help_text='If set, users must check this acknowledgment before proceeding with a booking.'
-    )
 
     def __str__(self):
         return '{} - {}'.format(self.name, self.district)
@@ -230,6 +226,10 @@ class Campground(models.Model):
     campground_map = models.FileField(upload_to=update_campground_map_filename, null=True, blank=True)
     campground_image = models.ForeignKey("CampgroundImage", on_delete=models.PROTECT, blank=True, null=True, related_name='campground_primary_image')
     release_time = models.TimeField(auto_now=False, auto_now_add=False, default="10:00:00")
+    custom_acknowledgment = models.TextField(
+        blank=True, default='',
+        help_text='If set, users must check this acknowledgment before proceeding with a booking.'
+    )
 
     def __str__(self):
         return self.name
