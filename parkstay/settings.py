@@ -142,6 +142,7 @@ PS_PAYMENT_SYSTEM_ID = decouple.config('PS_PAYMENT_SYSTEM_ID', default='S483')
 if not VALID_SYSTEMS:
     VALID_SYSTEMS = [PS_PAYMENT_SYSTEM_ID]
 EXPLORE_PARKS_URL = decouple.config('EXPLORE_PARKS_URL', default='https://parks.dpaw.wa.gov.au/park-stay')
+PRIVACY_POLICY_URL = decouple.config('PRIVACY_POLICY_URL', default='https://www.dbca.wa.gov.au/privacy')
 PARKS_EXTERNAL_BOOKING_URL = decouple.config('PARKS_EXTERNAL_BOOKING_URL',default='https://parkstaybookings.dbca.wa.gov.au')
 PARKSTAY_EXTERNAL_URL = decouple.config('PARKSTAY_EXTERNAL_URL',default='https://parkstay.dbca.wa.gov.au')
 DEV_STATIC = decouple.config('DEV_STATIC',default=False)
