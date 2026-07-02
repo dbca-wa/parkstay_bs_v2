@@ -126,7 +126,7 @@ from parkstay.serialisers import (CampsiteBookingSerialiser,
 from parkstay.helpers import is_officer
 from parkstay import reports
 from parkstay import pdf
-from parkstay.perms import PaymentCallbackPermission
+from parkstay.perms import PaymentCallbackPermission, OfficerPermission
 from parkstay import emails
 from parkstay import booking_availability
 from parkstay import context_processors
@@ -3646,7 +3646,8 @@ class CampsiteClassViewSet(viewsets.ModelViewSet):
 class BookingViewSet(viewsets.ModelViewSet):
     queryset = Booking.objects.none()
     serializer_class = BookingSerializer
-
+    permission_classes = [OfficerPermission,]
+  
     def list(self, request, *args, **kwargs):
         try:
             SORTABLE_COLS = ['id', 'campground_name', 'campground_site_type',  'arrival', 'departure']
@@ -4630,7 +4631,8 @@ class BulkPricingView(generics.CreateAPIView):
 
 class BookingRefundsReportView(views.APIView):
     renderer_classes = (JSONRenderer,)
-
+    permission_classes = [OfficerPermission,]
+  
     def get(self, request, format=None):
         try:
             http_status = status.HTTP_200_OK
@@ -4659,7 +4661,8 @@ class BookingRefundsReportView(views.APIView):
 
 class BookingSettlementReportView(views.APIView):
     renderer_classes = (JSONRenderer,)
-
+    permission_classes = [OfficerPermission,]
+  
     def get(self, request, format=None):
         try:
             http_status = status.HTTP_200_OK
@@ -4687,6 +4690,7 @@ class BookingSettlementReportView(views.APIView):
 
 class BookingReportView(views.APIView):
     renderer_classes = (JSONRenderer,)
+    permission_classes = [OfficerPermission,]
 
     def get(self, request, format=None):
         try:
