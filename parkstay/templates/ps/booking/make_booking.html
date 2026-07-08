@@ -586,6 +586,31 @@
                  </div>
 
 
+        <!-- Privacy Notice section -->
+        <div class="row">
+            <div class="col-12">
+                <div class="alert alert-info">
+                    <h4 style="text-align: center;">Privacy Notice</h4>
+                    <p>The Department of Biodiversity, Conservation and Attractions (DBCA) will only use information collected from you for the purposes of:</p>
+                    <ul>
+                        <li>enabling you to make and manage campsite bookings</li>
+                        <li>verifying your bookings</li>
+                        <li>contacting you about your bookings and camping experience</li>
+                        <li>responding to your enquiries</li>
+                        <li>conducting research into booking and camping behaviours and experiences</li>
+                        <li>conducting investigations of potential breaches of the terms and conditions or any applicable legislation or regulation</li>
+                    </ul>
+                    <p>If you provide incorrect or false information:</p>
+                    <ul>
+                        <li>we may not be able to contact you with updates about your bookings, which may include emergency safety information</li>
+                        <li>if you cannot verify your identity during any period booked, any bookings you have made may be void</li>
+                    </ul>
+                    <p>For further details on how DBCA manages your personal information, you can read our <a href="{{ PRIVACY_POLICY_URL }}" target="_blank">Privacy Policy</a>. If you have any questions about how your personal information will be handled, or if you would like to access your personal information, please contact DBCA on (08) 9219 9004 or email <a href="mailto:privacy@dbca.wa.gov.au">privacy@dbca.wa.gov.au</a></p>
+                </div>
+            </div>
+        </div>
+
+
 		 <!-- personal details start -->
                  <div class="round-box col-12 px-3">
                          <div class="col-12 pb-2">
@@ -751,75 +776,45 @@ We may ask for proof of identity. Bookings are not transferable and you cannot b
         </div>
 
 
-
-
-
-
+        <!-- Terms and conditions section -->
         <div class="row">
-            <div class="col-lg-12">
-                <div class="well">
-                    <div class="row">
-                      <div class="col-md-6">
-                         <div class="alert alert-danger" style='min-height: 250px'>
-                            <h4 style="text-align: center;">Privacy Notice</h4>
-                            <p>The Department of Biodiversity, Conservation and Attractions (DBCA) will only use information collected from you for the purposes of:</p>
-                            <ul>
-                                <li>enabling you to make and manage campsite bookings</li>
-                                <li>verifying your bookings</li>
-                                <li>contacting you about your bookings and camping experience</li>
-                                <li>responding to your enquiries</li>
-                                <li>conducting research into booking and camping behaviours and experiences</li>
-                                <li>conducting investigations of potential breaches of the terms and conditions or any applicable legislation or regulation</li>
-                            </ul>
-                            <p>If you provide incorrect or false information:</p>
-                            <ul>
-                                <li>we may not be able to contact you with updates about your bookings, which may include emergency safety information</li>
-                                <li>if you cannot verify your identity during any period booked, any bookings you have made may be void</li>
-                            </ul>
-                            <p>For further details on how DBCA manages your personal information, you can read our <a href="{{ PRIVACY_POLICY_URL }}" target="_blank">Privacy Policy</a>. If you have any questions about how your personal information will be handled, or if you would like to access your personal information, please contact DBCA on (08) 9219 9004 or email <a href="mailto:privacy@dbca.wa.gov.au">privacy@dbca.wa.gov.au</a></p>
-                          </div>
-                      </div>
-
-                        <div class="col-md-6 ">
-                            <div class="row ">
-                                <div class="col-md-12">
-                                  <div class="alert alert-info" style='min-height: 250px'>
-                                    <p>
-                                        Bookings are not transferable and you cannot book a campsite that you will not camp on yourself.  If you cancel or remove dates from a booking a short notice: a cancellation fee equivalent to one concession camper fee per date cancelled/removed will be charged
-                                    </p>
-                                    <div class="checkbox">
-                                        <label><input type="checkbox" v-bind:value="toc"   name='toc' v-model="toc"> I agree to the <a target="_blank" href="http://exploreparks.dbca.wa.gov.au/online-campsite-booking-terms-and-conditions">terms and conditions</a></label>
-                                    </div>
-
-                                    <input type="hidden" name="trav_res" value="true">
-
-                                    {% if custom_acknowledgment %}
-                                    <div class="checkbox">
-                                        <label><input type="checkbox" name="custom_acknowledgment" v-model="custom_acknowledgment_checked"> {{ custom_acknowledgment }}</label>
-                                    </div>
-                                    <input type="hidden" name="custom_acknowledgment_text" value="{{ custom_acknowledgment }}">
-                                    {% endif %}
-                                    <br>
-
-				    <button :disabled="!toc || (has_custom_acknowledgment && !custom_acknowledgment_checked)" type="submit" class="btn btn-primary btn-lg"><span v-if="total<0" >PROCEED</span><span v-else-if="total==0">PROCEED</span><span v-else >PROCEED</span></button>
-                                    {% if request.user.is_staff is True or create_booking_on_behalf is True %}
-				              {% if PARKSTAY_PERMISSIONS.special_permissions is True %}
-					      <br><br>
-				                  <label>&nbsp;&nbsp;<input type="checkbox" v-bind:value="customer_managed_booking_disabled"   name='customer_managed_booking_disabled' v-model="customer_managed_booking_disabled">&nbsp;&nbsp;Disabled Customer Booking Management</label>
-					      {% endif %}
-
-                                              {% if booking_without_payment is True %}
-
-					      <label>&nbsp;&nbsp;<input type="checkbox" v-bind:value="no_payment"   name='no_payment' v-model="no_payment">&nbsp;&nbsp;Continue Booking without Payment.  Do not send invoice.</label>
-						    <div style='color:red; font-size: 12px;'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(no confirmation or invoice email sent.)</div>
-
-                                              {% endif %}
-                                    {% endif %}
-                                </div>
-                               </div>
-                            </div>
-                        </div>
+            <div class="col-md-6">
+                <div class="alert alert-danger">
+                    <p>If you cancel or remove dates from a confirmed booking one concession camper fee may be charged for each date removed.</p>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="alert alert-info">
+                    <div class="checkbox">
+                        <label><input type="checkbox" v-bind:value="toc" name='toc' v-model="toc"> I agree to the <a target="_blank" href="http://exploreparks.dbca.wa.gov.au/online-campsite-booking-terms-and-conditions">terms and conditions</a></label>
                     </div>
+
+                    <input type="hidden" name="trav_res" value="true">
+
+                    {% if custom_acknowledgment %}
+                    <div class="checkbox">
+                        <label><input type="checkbox" name="custom_acknowledgment" v-model="custom_acknowledgment_checked"> {{ custom_acknowledgment }}</label>
+                    </div>
+                    <input type="hidden" name="custom_acknowledgment_text" value="{{ custom_acknowledgment }}">
+                    {% endif %}
+                    <br>
+
+                    <button :disabled="!toc || (has_custom_acknowledgment && !custom_acknowledgment_checked)" type="submit" class="btn btn-primary btn-lg"><span v-if="total<0">PROCEED</span><span v-else-if="total==0">PROCEED</span><span v-else>PROCEED</span></button>
+                    {% if request.user.is_staff is True or create_booking_on_behalf is True %}
+                        {% if PARKSTAY_PERMISSIONS.special_permissions is True %}
+                        <br><br>
+                        <div class="checkbox">
+                            <label><input type="checkbox" v-bind:value="customer_managed_booking_disabled" name='customer_managed_booking_disabled' v-model="customer_managed_booking_disabled"> Disabled Customer Booking Management</label>
+                        </div>
+                        {% endif %}
+
+                        {% if booking_without_payment is True %}
+                        <div class="checkbox">
+                            <label><input type="checkbox" v-bind:value="no_payment" name='no_payment' v-model="no_payment"> Continue Booking without Payment.  Do not send invoice.</label>
+                            <div style='color:red; font-size: 12px; margin-left: 20px;'>(no confirmation or invoice email sent.)</div>
+                        </div>
+                        {% endif %}
+                    {% endif %}
                 </div>
             </div>
         </div>
