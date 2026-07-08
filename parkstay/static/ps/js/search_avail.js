@@ -872,7 +872,9 @@ calculate_arrival_days_old_07112025: function(targetDateString) {
           }
 
           if (rowcount < 15) {
-            var search_name = search_results[i]["name"].replace("'", "&#39;");
+            // var search_name = search_results[i]["name"].replace("'", "&#39;");
+            // Replace ALL occurrences of single quotes
+            var search_name = search_results[i]["name"].replaceAll("'", "&#39;");
             search_results_html +=
               "<div id='search_dropdown_item_" +
               rowcount +
