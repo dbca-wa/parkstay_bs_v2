@@ -57,6 +57,12 @@ export default function (vm) {
     console.log('Loading map...');
     // vm.load_site_queue();
 
+    const mapConfigEl = document.getElementById('map-config-data');
+    if (!mapConfigEl) {
+        throw new Error('map-config-data element not found. Ensure the template renders {{ map_config|json_script:"map-config-data" }}.');
+    }
+    const mapConfig = JSON.parse(mapConfigEl.textContent);
+
     var nowTemp = new Date();
     var now = moment
         .utc({
@@ -155,9 +161,9 @@ export default function (vm) {
 
     vm.streets = new ol.layer.Tile({
         source: new ol.source.WMTS({
-            url: 'https://kmi.dpaw.wa.gov.au/geoserver/gwc/service/wmts',
+            url: mapConfig.streets_url,
             format: 'image/png',
-            layer: 'public:mapbox-streets',
+            layer: mapConfig.streets_layer,
             matrixSet: vm.matrixSet,
             projection: vm.projection,
             tileGrid: tileGrid,
@@ -167,9 +173,9 @@ export default function (vm) {
     vm.tenure = new ol.layer.Tile({
         opacity: 0.6,
         source: new ol.source.WMTS({
-            url: 'https://kmi.dpaw.wa.gov.au/geoserver/gwc/service/wmts',
+            url: mapConfig.tenure_url,
             format: 'image/png',
-            layer: 'public:dbca_legislated_lands_and_waters',
+            layer: mapConfig.tenure_layer,
             matrixSet: vm.matrixSet,
             projection: vm.projection,
             tileGrid: tileGrid,
