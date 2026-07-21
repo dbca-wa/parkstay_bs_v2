@@ -1240,6 +1240,12 @@ class SearchAvailablity(TemplateView):
         context['DEFAULT_SEARCH_AVAILABILITY_LOCATION'] = settings.DEFAULT_SEARCH_AVAILABILITY_LOCATION
         context['notices_obj'] = notices_obj
         context['in_progress_booking_id'] = in_progress_booking_id
+        context['map_config'] = {
+            'streets_url': settings.MAP_STREETS_URL,
+            'streets_layer': settings.MAP_STREETS_LAYER,
+            'tenure_url': settings.MAP_TENURE_URL,
+            'tenure_layer': settings.MAP_TENURE_LAYER,
+        }
         return render(request, self.template_name, context)
 
     #def get(self, *args, **kwargs):
