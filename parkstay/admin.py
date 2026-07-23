@@ -468,8 +468,17 @@ class ParkstayPermissionAdmin(admin.ModelAdmin):
       list_filter = ('permission_group',)
 
       def save_model(self, request, obj, form, change):
-          messages.add_message(request, messages.WARNING, 'Permission changes will not update until the user logout and login again.')
+          cache.delete('parkstay_url_permissionsTrue' + obj.email)
           super().save_model(request, obj, form, change)
+
+      def delete_model(self, request, obj):
+          cache.delete('parkstay_url_permissionsTrue' + obj.email)
+          super().delete_model(request, obj)
+
+      def delete_queryset(self, request, queryset):
+          for obj in queryset:
+              cache.delete('parkstay_url_permissionsTrue' + obj.email)
+          super().delete_queryset(request, queryset)
 
 @admin.register(models.CampgroundPermission)
 class CampgroundPermissionAdmin(admin.ModelAdmin):
