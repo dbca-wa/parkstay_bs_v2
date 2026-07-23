@@ -471,6 +471,15 @@ class ParkstayPermissionAdmin(admin.ModelAdmin):
           cache.delete('parkstay_url_permissionsTrue' + obj.email)
           super().save_model(request, obj, form, change)
 
+      def delete_model(self, request, obj):
+          cache.delete('parkstay_url_permissionsTrue' + obj.email)
+          super().delete_model(request, obj)
+
+      def delete_queryset(self, request, queryset):
+          for obj in queryset:
+              cache.delete('parkstay_url_permissionsTrue' + obj.email)
+          super().delete_queryset(request, queryset)
+
 @admin.register(models.CampgroundPermission)
 class CampgroundPermissionAdmin(admin.ModelAdmin):
       search_fields = ('email',)
