@@ -9,7 +9,6 @@ import hashlib
 import uuid
 
 def parkstay_url(request):
-    session_id = request.COOKIES.get('sessionid', None)
     is_authenticated = False
     booking_timer = 0
     checkouthash = hashlib.sha256(str(uuid.uuid4()).encode('utf-8')).hexdigest()
@@ -32,27 +31,26 @@ def parkstay_url(request):
            except:
                pass
 
-    # staff need to login and logout for permissions to refresh
-    parkstay_permissions_cache = cache.get('parkstay_url_permissions'+str(is_authenticated)+str(session_id))
-    #parkstay_officers = ledger_api_utils.user_in_system_group(request.user.id,'Parkstay Officers')
+    # Permissions are cached per user email so admins can invalidate immediately on save
     parkstay_officers = None
+    user_email = None
     if is_authenticated is True:
         parkstay_officers = ledger_api_utils.user_in_system_group(request.session['user_obj']['user_id'],'Parkstay Officers')
-        
+        user_email = request.session['user_obj']['email']
+
+    parkstay_permissions_cache = cache.get('parkstay_url_permissions'+str(is_authenticated)+str(user_email))
     parkstay_permissions = {'special_permissions': False}
     if parkstay_permissions_cache is None:
         for pg in models.ParkstayPermission.PERMISSION_GROUP:
             parkstay_permissions['p'+str(pg[0])] = False
 
-        #if request.user.is_authenticated:
         if is_authenticated is True:
-            #parkstay_permissions_obj = models.ParkstayPermission.objects.filter(email=request.user.email)
-            parkstay_permissions_obj = models.ParkstayPermission.objects.filter(email=request.session['user_obj']['email'])
+            parkstay_permissions_obj = models.ParkstayPermission.objects.filter(email=user_email)
             for pp in parkstay_permissions_obj:
                 if pp.active is True:
                    parkstay_permissions['p'+str(pp.permission_group)] = True
                    parkstay_permissions['special_permissions'] = True
-        cache.set('parkstay_url_permissions'+str(is_authenticated)+str(session_id), json.dumps(parkstay_permissions),  86400)
+        cache.set('parkstay_url_permissions'+str(is_authenticated)+str(user_email), json.dumps(parkstay_permissions),  86400)
     else:
         parkstay_permissions = json.loads(parkstay_permissions_cache)
 
