@@ -647,11 +647,7 @@
                                                          <b>Name:</b>
                                                          {{ request.user.first_name }}
                                                          {{ request.user.last_name }}
-                                                         <p><i>
-We may ask for proof of identity. Bookings are not transferable and you cannot book a campsite that you will not camp on yourself. Others travelling with you who are not included in this booking must make their own separate booking</i>
-
-
-                                                         </p>
+                                                         <p><i>BOOKINGS ARE NOT TRANSFERABLE</i></p>
                                                    </div>
  
                                              </div>
@@ -671,7 +667,7 @@ We may ask for proof of identity. Bookings are not transferable and you cannot b
                                                 </div>
                                             </div>
                                           </div>
-                                          <div class="row"  style='display:none'>
+                                          <div class="row" >
                                             <div class="col-md-6">
                                                 <div class="form-group">
                                                     <b>{{form.phone.label_tag}}</b>
@@ -680,17 +676,14 @@ We may ask for proof of identity. Bookings are not transferable and you cannot b
                                             </div>
                                             <div class="col-md-6">
                                                 <div class="form-group">
-                                                    {{form.postcode.label_tag}}
+                                                    <b>{{form.postcode.label_tag}}</b>
                                                     {{ form.postcode|class:'form-control'}}
                                                 </div>
                                             </div>                                               
                                           </div>
 
                                             <div class="col-md-12 pt-3">
-                                                <p>Logged in as user <b>{{ request.user.email }}</b>.</p>
-                                            </div>
-                                            <div class="col-md-12 pt-1">
-<p><i>We will use these details to contact you about your booking, including in case of emergency. You can update the phone number at any time up to and including the day before the arrival date by logging in to your account.’ </i></p>
+                                                <p><b>Email:</b> {{ request.user.email }}</p>
                                             </div>
 
                                           {% endif %}
