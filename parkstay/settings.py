@@ -209,6 +209,11 @@ MIDDLEWARE_CLASSES = None
 
 DEFAULT_SEARCH_AVAILABILITY_LOCATION=decouple.config('DEFAULT_SEARCH_AVAILABILITY_LOCATION',default='')
 
+MAP_STREETS_URL = decouple.config('MAP_STREETS_URL', default='https://kb.dbca.wa.gov.au/geoserver/gwc/service/wmts')
+MAP_STREETS_LAYER = decouple.config('MAP_STREETS_LAYER', default='kaartdijin-boodja-public:mapbox-streets-public')
+MAP_TENURE_URL = decouple.config('MAP_TENURE_URL', default='https://kb.dbca.wa.gov.au/geoserver/gwc/service/wmts')
+MAP_TENURE_LAYER = decouple.config('MAP_TENURE_LAYER', default='kaartdijin-boodja-public:CPT_DBCA_LEGISLATED_TENURE')
+
 SESSION_COOKIE_AGE = 3600
 DEBUG_CONTROL = False
 

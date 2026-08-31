@@ -288,6 +288,7 @@
         <textarea id="feature_json" style="display: none">
 {{ features_json }}</textarea
         >
+        {{ map_config|json_script:"map-config-data" }}
       </form>
 
       <div id="search-selections" class="round-box col-12 px-3">
