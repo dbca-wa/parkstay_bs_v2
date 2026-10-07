@@ -4587,6 +4587,7 @@ class UsersViewSet(viewsets.ModelViewSet):
 class BulkPricingView(generics.CreateAPIView):
     serializer_class = BulkPricingSerializer
     renderer_classes = (JSONRenderer,)
+    permission_classes = [OfficerPermission,]
 
     def create(self, request, *args, **kwargs):
         try:
@@ -4822,6 +4823,7 @@ class UpdateProfileAddress(views.APIView):
 
 class OracleJob(views.APIView):
     renderer_classes = [JSONRenderer, ]
+    permission_classes = [OfficerPermission,]
 
     def get(self, request, format=None):
         try:
