@@ -63,6 +63,8 @@ if not DEBUG:
 else:
     REST_FRAMEWORK['DEFAULT_RENDERER_CLASSES']=('rest_framework.renderers.JSONRenderer','rest_framework_csv.renderers.CSVRenderer')
 
+# show the DRF API root view (list of API endpoints) at /api/
+SHOW_API_ROOT = decouple.config('SHOW_API_ROOT', default=False, cast=bool)
 
 TEMPLATES[0]['DIRS'].append(os.path.join(BASE_DIR, 'parkstay', 'templates'))
 TEMPLATES[0]['DIRS'].append(os.path.join(BASE_DIR, 'django_site_queue', 'templates'))
