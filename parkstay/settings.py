@@ -254,6 +254,7 @@ print (CSRF_TRUSTED_ORIGINS_STRING)
 CSRF_TRUSTED_ORIGINS = json.loads(str(CSRF_TRUSTED_ORIGINS_STRING))
 # CSRF_COOKIE_DOMAIN = decouple.config("CSRF_COOKIE_DOMAIN", default='.dbca.wa.gov.au')
 CSRF_COOKIE_SECURE = decouple.config('CSRF_COOKIE_SECURE',default=True, cast=bool) 
+SESSION_COOKIE_SECURE = decouple.config('SESSION_COOKIE_SECURE', default=True, cast=bool)
 # This is needed so that the chmod is not called in django/core/files/storage.py
 # (_save method of FileSystemStorage class)
 # As it causes a permission exception when using azure network drives
