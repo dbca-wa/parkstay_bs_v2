@@ -1004,7 +1004,7 @@ We may ask for proof of identity. Bookings are not transferable and you cannot b
                 } else {
                     expires = "";
                 }
-                document.cookie = encodeURIComponent(name) + "=" + encodeURIComponent(value) + expires + "; path=/";
+                document.cookie = encodeURIComponent(name) + "=" + encodeURIComponent(value) + expires + "; path=/; secure";
             },
             updateLocalStorage: function() {
                 var vm = this;
