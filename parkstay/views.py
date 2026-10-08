@@ -52,6 +52,7 @@ from django.db.models import Max
 from django.core.cache import cache
 
 from parkstay.helpers import is_officer
+from parkstay.sanitisation import check_plain_text
 from parkstay import utils
 from parkstay import booking_availability
 from parkstay import context_processors
@@ -470,6 +471,12 @@ class MakeBookingsView(TemplateView):
                  form.add_error(None, 'Vehicle is missing rego.')
 
         if vehicle_errors is True:
+            return self.render_page(request, booking, form, vehicles, show_errors=True)
+
+        try:
+            check_plain_text(request.POST.get('custom_acknowledgment_text', ''))
+        except ValidationError as e:
+            form.add_error(None, e)
             return self.render_page(request, booking, form, vehicles, show_errors=True)
 
         # update the booking object with information from the form

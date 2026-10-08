@@ -126,7 +126,8 @@ from parkstay.serialisers import (CampsiteBookingSerialiser,
 from parkstay.helpers import is_officer
 from parkstay import reports
 from parkstay import pdf
-from parkstay.perms import PaymentCallbackPermission, OfficerPermission
+from parkstay.perms import PaymentCallbackPermission, OfficerPermission, OfficerOrReadOnlyPermission
+from parkstay.sanitisation import check_plain_text
 from parkstay import emails
 from parkstay import booking_availability
 from parkstay import context_processors
@@ -135,21 +136,25 @@ from parkstay import context_processors
 class CampsiteBookingViewSet(viewsets.ModelViewSet):
     queryset = CampsiteBooking.objects.all()
     serializer_class = CampsiteBookingSerialiser
+    permission_classes = [OfficerPermission]
 
 
 class DistrictViewSet(viewsets.ModelViewSet):
     queryset = District.objects.all()
     serializer_class = DistrictSerializer
+    permission_classes = [OfficerOrReadOnlyPermission]
 
 
 class ContactViewSet(viewsets.ModelViewSet):
     queryset = Contact.objects.all()
     serializer_class = ContactSerializer
+    permission_classes = [OfficerPermission]
 
 
 class CampsiteViewSet(viewsets.ModelViewSet):
     queryset = Campsite.objects.all()
     serializer_class = CampsiteSerialiser
+    permission_classes = [OfficerPermission]
 
     def list(self, request, format=None):
         queryset = self.get_queryset()
@@ -352,6 +357,7 @@ class CampsiteViewSet(viewsets.ModelViewSet):
 class CampsiteStayHistoryViewSet(viewsets.ModelViewSet):
     queryset = CampsiteStayHistory.objects.all()
     serializer_class = CampsiteStayHistorySerializer
+    permission_classes = [OfficerPermission]
 
     def update(self, request, *args, **kwargs):
         try:
@@ -375,6 +381,7 @@ class CampsiteStayHistoryViewSet(viewsets.ModelViewSet):
 class CampgroundStayHistoryViewSet(viewsets.ModelViewSet):
     queryset = CampgroundStayHistory.objects.all()
     serializer_class = CampgroundStayHistorySerializer
+    permission_classes = [OfficerPermission]
 
     def update(self, request, *args, **kwargs):
         try:
@@ -546,6 +553,7 @@ def complete_booking(request, booking_hash, booking_id):
 class CampgroundViewSet(viewsets.ModelViewSet):
     queryset = Campground.objects.all()
     serializer_class = CampgroundSerializer
+    permission_classes = [OfficerPermission]
 
     @list_route(methods=['GET', ], detail=False)
     @renderer_classes((JSONRenderer,))
@@ -1909,6 +1917,8 @@ class AvailabilityRatisViewSet(BaseAvailabilityViewSet):
 
 
 class AvailabilityAdminViewSet(BaseAvailabilityViewSet):
+    permission_classes = [OfficerPermission]
+
     def retrieve(self, request, *args, **kwargs):
         return super(AvailabilityAdminViewSet, self).retrieve(request, *args, show_all=True, **kwargs)
 
@@ -2592,6 +2602,9 @@ def booking_vehicle_update(request, *args, **kwargs):
                    if booking.departure > today:
                         for bv in payload:
                             if bv[0:7] == 'bvrego-':
+                                check_plain_text(payload[bv])
+                        for bv in payload:
+                            if bv[0:7] == 'bvrego-':
                                 bvrego_split = bv.split("-")
                                 bv_id = bvrego_split[1]
                                 bvr_obj = parkstay_models.BookingVehicleRego.objects.filter(id=int(bv_id))
@@ -2646,6 +2659,8 @@ def booking_updates(request, *args, **kwargs):
              campsite = booking.campsites.all()[0].campsite if booking else None
 
              vehicles = payload['vehicles']
+             for v in vehicles:
+                 check_plain_text(v[1])
              price_override = payload['price_override']
              price_override_admin = payload['price_override_admin']
 
@@ -3413,11 +3428,13 @@ def get_confirmation(request, *args, **kwargs):
 class PromoAreaViewSet(viewsets.ModelViewSet):
     queryset = PromoArea.objects.all()
     serializer_class = PromoAreaSerializer
+    permission_classes = [OfficerPermission]
 
 
 class ParkViewSet(viewsets.ModelViewSet):
     queryset = Park.objects.all()
     serializer_class = ParkSerializer
+    permission_classes = [OfficerPermission]
 
     def list(self, request, *args, **kwargs):
         data = cache.get('parks')
@@ -3479,21 +3496,25 @@ class ParkViewSet(viewsets.ModelViewSet):
 class FeatureViewSet(viewsets.ModelViewSet):
     queryset = Feature.objects.all()
     serializer_class = FeatureSerializer
+    permission_classes = [OfficerPermission]
 
 
 class ParkEntryRateViewSet(viewsets.ModelViewSet):
     queryset = ParkEntryRate.objects.all()
     serializer_class = ParkEntryRateSerializer
+    permission_classes = [OfficerPermission]
 
 
 class RegionViewSet(viewsets.ModelViewSet):
     queryset = Region.objects.all()
     serializer_class = RegionSerializer
+    permission_classes = [OfficerOrReadOnlyPermission]
 
 
 class CampsiteClassViewSet(viewsets.ModelViewSet):
     queryset = CampsiteClass.objects.all()
     serializer_class = CampsiteClassSerializer
+    permission_classes = [OfficerPermission]
 
     def list(self, request, *args, **kwargs):
         active_only = bool(request.GET.get('active_only', False))
@@ -4346,6 +4367,7 @@ class BookingViewSet(viewsets.ModelViewSet):
 class CampsiteRateViewSet(viewsets.ModelViewSet):
     queryset = CampsiteRate.objects.all()
     serializer_class = CampsiteRateSerializer
+    permission_classes = [OfficerPermission]
 
     def create(self, request, format=None):
         try:
@@ -4429,6 +4451,7 @@ class CampsiteRateViewSet(viewsets.ModelViewSet):
 
 
 class BookingRangeViewset(viewsets.ModelViewSet):
+    permission_classes = [OfficerPermission]
 
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
@@ -4468,6 +4491,7 @@ class CampsiteBookingRangeViewset(BookingRangeViewset):
 class RateViewset(viewsets.ModelViewSet):
     queryset = Rate.objects.all()
     serializer_class = RateSerializer
+    permission_classes = [OfficerPermission]
 
 # Reasons
 # =========================
