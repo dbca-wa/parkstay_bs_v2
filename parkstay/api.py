@@ -2973,6 +2973,15 @@ def create_booking(request, *args, **kwargs):
 
 
     try:
+        for name in ('selecttype', 'multiplesites', 'multiplesites_class_totals'):
+            check_plain_text(request.POST.get(name, ''))
+    except ValidationError as e:
+        return HttpResponse(geojson.dumps({
+            'status': 'error',
+            'msg': e.messages[0],
+        }), status=400, content_type='application/json')
+
+    try:
         inprogress_booking = utils.get_session_booking(request.session)
         print ("INPROGRESS BOOKING")
         print (inprogress_booking)

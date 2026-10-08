@@ -474,7 +474,9 @@ class MakeBookingsView(TemplateView):
             return self.render_page(request, booking, form, vehicles, show_errors=True)
 
         try:
-            check_plain_text(request.POST.get('custom_acknowledgment_text', ''))
+            for name in ('toc', 'outsideregion', 'trav_res', 'no_payment',
+                         'custom_acknowledgment', 'custom_acknowledgment_text'):
+                check_plain_text(request.POST.get(name, ''))
         except ValidationError as e:
             form.add_error(None, e)
             return self.render_page(request, booking, form, vehicles, show_errors=True)
