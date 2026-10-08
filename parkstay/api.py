@@ -127,6 +127,7 @@ from parkstay.helpers import is_officer
 from parkstay import reports
 from parkstay import pdf
 from parkstay.perms import PaymentCallbackPermission, OfficerPermission, OfficerOrReadOnlyPermission
+from parkstay.sanitisation import check_plain_text
 from parkstay import emails
 from parkstay import booking_availability
 from parkstay import context_processors
@@ -2601,6 +2602,9 @@ def booking_vehicle_update(request, *args, **kwargs):
                    if booking.departure > today:
                         for bv in payload:
                             if bv[0:7] == 'bvrego-':
+                                check_plain_text(payload[bv])
+                        for bv in payload:
+                            if bv[0:7] == 'bvrego-':
                                 bvrego_split = bv.split("-")
                                 bv_id = bvrego_split[1]
                                 bvr_obj = parkstay_models.BookingVehicleRego.objects.filter(id=int(bv_id))
@@ -2655,6 +2659,8 @@ def booking_updates(request, *args, **kwargs):
              campsite = booking.campsites.all()[0].campsite if booking else None
 
              vehicles = payload['vehicles']
+             for v in vehicles:
+                 check_plain_text(v[1])
              price_override = payload['price_override']
              price_override_admin = payload['price_override_admin']
 
