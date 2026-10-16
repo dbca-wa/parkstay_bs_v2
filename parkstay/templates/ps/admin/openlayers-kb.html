@@ -1,0 +1,29 @@
+{% extends "gis/openlayers-osm.html" %}
+
+{% block base_layer %}
+{# Kaartdijin Boodja streets tiles (WMTS, EPSG:3857), the same layer as the public map #}
+var kb_projection = ol.proj.get('EPSG:3857');
+var kb_extent = kb_projection.getExtent();
+var kb_size = ol.extent.getWidth(kb_extent) / 256;
+var kb_resolutions = [];
+var kb_matrix_ids = [];
+for (var z = 0; z < 21; ++z) {
+    kb_resolutions.push(kb_size / Math.pow(2, z));
+    kb_matrix_ids.push('mercator:' + z);
+}
+var base_layer = new ol.layer.Tile({
+    source: new ol.source.WMTS({
+        url: '{{ streets_url|escapejs }}',
+        layer: '{{ streets_layer|escapejs }}',
+        matrixSet: 'mercator',
+        format: 'image/png',
+        style: '',
+        projection: kb_projection,
+        tileGrid: new ol.tilegrid.WMTS({
+            origin: ol.extent.getTopLeft(kb_extent),
+            resolutions: kb_resolutions,
+            matrixIds: kb_matrix_ids
+        })
+    })
+});
+{% endblock %}

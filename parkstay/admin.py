@@ -1,5 +1,6 @@
 from django.contrib.gis import admin
 from parkstay import models
+from parkstay.widgets import KBMapWidget
 from django.core.cache import cache
 from django.contrib.admin import AdminSite
 from django.contrib.auth.admin import UserAdmin
@@ -50,6 +51,7 @@ class CampsiteClassAdmin(admin.ModelAdmin):
 
 @admin.register(models.Park)
 class ParkAdmin(admin.GISModelAdmin):
+    gis_widget = KBMapWidget
     list_display = ('name', 'district')
     ordering = ('name',)
     list_filter = ('district',)
@@ -73,6 +75,7 @@ class CampsiteInline(admin.TabularInline):
 
 @admin.register(models.Campground)
 class CampgroundAdmin(admin.GISModelAdmin,SummernoteModelAdmin):
+    gis_widget = KBMapWidget
     summernote_fields = ('about','booking_information','campsite_information','facilities_information','campground_rules','fee_information','health_and_safety_information','location_information')
     list_display = ('name', 'park', 'promo_area', 'campground_type', 'site_type', 'max_advance_booking')
     ordering = ('name',)
@@ -443,6 +446,7 @@ class MyBookingNoticeAdmin(admin.ModelAdmin):
 
 @admin.register(models.PromoArea)
 class PromoAreaAdmin(admin.GISModelAdmin):
+    gis_widget = KBMapWidget
     list_display = ('name', 'wkb_geometry')
     ordering = ('name',)
     search_fields = ('name',)
@@ -450,6 +454,7 @@ class PromoAreaAdmin(admin.GISModelAdmin):
 
 @admin.register(models.Places)
 class PlacesAdmin(admin.GISModelAdmin):
+    gis_widget = KBMapWidget
     list_display = ('name',)
     ordering = ('name',)
     search_fields = ('name',)
