@@ -27,6 +27,7 @@ from ledger_api_client import utils as ledger_api_utils
 #from ledger.payments.cash.models import CashTransaction
 from rest_framework import viewsets, serializers, status, generics, views
 from parkstay import property_cache, utils_cache
+from parkstay.sanitisation import SanitiseMixin
 from django.utils.safestring import mark_safe
 from django.utils.html import strip_tags
 from django.utils.text import slugify
@@ -46,7 +47,7 @@ NUMBER_VEHICLE_CHOICES = (
 )
 
 
-class Contact(models.Model):
+class Contact(SanitiseMixin):
     name = models.CharField(max_length=255, unique=True)
     phone_number = models.CharField(max_length=50, null=True, blank=True)
     email = models.EmailField(max_length=255)
@@ -58,7 +59,7 @@ class Contact(models.Model):
         return "{}: {}".format(self.name, self.phone_number)
 
 
-class Park(models.Model):
+class Park(SanitiseMixin):
 
     ZOOM_LEVEL = (
         (0, 'default'),
@@ -108,7 +109,7 @@ class Park(models.Model):
         unique_together = (('name',),)
 
 
-class PromoArea(models.Model):
+class PromoArea(SanitiseMixin):
 
     ZOOM_LEVEL = (
         (0, 'default'),
@@ -145,7 +146,7 @@ def update_campground_map_filename(instance, filename):
 class CampgroundGPSAdminForm(forms.ModelForm):
       wkb_geometry = forms.PointField(widget=forms.OSMWidget(attrs={'display_raw': True}))
 
-class Campground(models.Model):
+class Campground(SanitiseMixin):
     form = CampgroundGPSAdminForm
     CAMPGROUND_TYPE_CHOICES = (
         (0, 'Bookable Online'),
@@ -235,6 +236,23 @@ class Campground(models.Model):
         return self.name
 
     def save(self, *args, **kwargs):
+        # fields that keep allowed html (task 19165)
+        kwargs.setdefault("exclude_sanitise", [
+            "description",
+            "about",
+            "booking_information",
+            "campsite_information",
+            "facilities_information",
+            "campground_rules",
+            "fee_information",
+            "health_and_safety_information",
+            "location_information",
+            "long_description",
+            "area_activities",
+            "driving_directions",
+            "fees",
+            "othertransport",
+        ])
         if self.id is not None:
            cg = Campground.objects.get(id=self.id)
            cache.delete('utils_cache.all_campgrounds')
@@ -431,7 +449,7 @@ class Campground(models.Model):
             raise
 
 
-class CampgroundNotice(models.Model):
+class CampgroundNotice(SanitiseMixin):
 
        NOTICE_TYPE = ((0,'Red Warning'),
                       (1,'Orange Warning'),
@@ -466,7 +484,7 @@ class CampgroundGroupMembers(models.Model):
 
 #db_table='emailuser'
 #db_table='parkstay_campgroundgroup_members'
-class CampgroundGroup(models.Model):
+class CampgroundGroup(SanitiseMixin):
     name = models.CharField(max_length=100)
     members = models.ManyToManyField(EmailUser, db_table='parkstay_campgroundgroup_members', blank=True,)
     campgrounds = models.ManyToManyField(Campground, blank=True)
@@ -482,7 +500,7 @@ class CampgroundGroup(models.Model):
 
 CampgroundGroup.members.through._meta.get_field('emailuserro_id').column='emailuser_id'
 
-class CampgroundPermission(models.Model):
+class CampgroundPermission(SanitiseMixin):
       PERMISSION_GROUP = (
           (0, 'Campground Booking Management'),
       )
@@ -519,7 +537,7 @@ class CampgroundGroupCampgrounds(models.Model):
 #          abstract = True
 #          db_table = 'parkstay_campgroundgroup_members'
 
-class EmailGroup(models.Model):
+class EmailGroup(SanitiseMixin):
 
     EMAIL_GROUP = (
         (0, 'Parkstay Booking Checks'),
@@ -532,7 +550,7 @@ class EmailGroup(models.Model):
     def __str__(self):
         return self.email
 
-class CampgroundImage(models.Model):
+class CampgroundImage(SanitiseMixin):
     image = models.ImageField(max_length=255, upload_to=campground_image_path)
     campground = models.ForeignKey(Campground, related_name='images', on_delete=models.CASCADE)
     checksum = models.CharField(blank=True, max_length=255, editable=False)
@@ -609,7 +627,7 @@ class CampgroundImage(models.Model):
         super(CampgroundImage, self).delete(*args, **kwargs)
 
 
-class BookingRange(models.Model):
+class BookingRange(SanitiseMixin):
     BOOKING_RANGE_CHOICES = (
         (0, 'Open'),        # not used
         (1, 'Closed'),
@@ -668,7 +686,7 @@ class BookingRange(models.Model):
         return '{} {} - {}'.format(self.status, self.range_start, self.range_end)
 
 
-class StayHistory(models.Model):
+class StayHistory(SanitiseMixin):
     created = models.DateTimeField(auto_now_add=True)
     # minimum/maximum consecutive days allowed for a booking
     min_days = models.SmallIntegerField(default=1)
@@ -736,7 +754,7 @@ class CampgroundBookingRange(BookingRange):
         super(CampgroundBookingRange, self).clean(*args, **kwargs)
 
 
-class Campsite(models.Model):
+class Campsite(SanitiseMixin):
     campground = models.ForeignKey('Campground', db_index=True, on_delete=models.PROTECT, related_name='campsites')
     name = models.CharField(max_length=255)
     campsite_class = models.ForeignKey('CampsiteClass', on_delete=models.PROTECT, null=True, blank=True, related_name='campsites')
@@ -761,6 +779,7 @@ class Campsite(models.Model):
         unique_together = (('campground', 'name'),)
 
     def save(self, *args, **kwargs):
+        kwargs.setdefault("exclude_sanitise", ["description", "short_description"])  # fields that keep allowed html (task 19165)
         cache.delete('booking_availability.get_campsites_for_campground')
         cache.delete('booking_availability.get_campsites_for_campground:'+str(self.campground.id))
         cache.delete('utils_cache.all_campground_campsites('+str(self.campground.id)+')')
@@ -890,7 +909,7 @@ class Campsite(models.Model):
             raise
 
 
-class ParkstayPermission(models.Model):
+class ParkstayPermission(SanitiseMixin):
       PERMISSION_GROUP = (
           (0, 'Multiple Campsite Selection'),
           (1, 'Override Price'),
@@ -938,7 +957,7 @@ class CampgroundStayHistory(StayHistory):
     campground = models.ForeignKey('Campground', on_delete=models.PROTECT, related_name='stay_history')
 
 
-class PeakGroup(models.Model):
+class PeakGroup(SanitiseMixin):
       name = models.CharField(max_length=255, unique=True)
       active = models.BooleanField(default=True)
       created = models.DateTimeField(default=timezone.now)
@@ -965,7 +984,7 @@ class PeakPeriod(models.Model):
       def __str__(self):
             return "{} - {}".format(self.start_date.strftime("%d/%m/%Y"), self.end_date.strftime("%d/%m/%Y"))
 
-class BookingPolicy(models.Model):
+class BookingPolicy(SanitiseMixin):
 
       BOOKING_POLICY = (
           (0, 'Fixed Daily'),
@@ -1074,7 +1093,7 @@ class CampgroundReleaseDate(models.Model):
     class Meta:
         unique_together = [['release_date', 'booking_open_date','campground']]          
 
-class Feature(models.Model):
+class Feature(SanitiseMixin):
     TYPE_CHOICES = (
         (0, 'Campground'),
         (1, 'Campsite'),
@@ -1093,7 +1112,7 @@ class Feature(models.Model):
     def __str__(self):
         return self.name + " ("+self.get_type_display()+")"
 
-class Places(models.Model):
+class Places(SanitiseMixin):
 
     ZOOM_LEVEL = (
         (0, 'default'),
@@ -1128,7 +1147,7 @@ class Places(models.Model):
     def __str__(self):
         return self.name
 
-class Region(models.Model):
+class Region(SanitiseMixin):
     name = models.CharField(max_length=255, unique=True)
     abbreviation = models.CharField(max_length=16, null=True, unique=True)
     ratis_id = models.IntegerField(default=-1)
@@ -1137,7 +1156,7 @@ class Region(models.Model):
         return self.name
 
 
-class District(models.Model):
+class District(SanitiseMixin):
     name = models.CharField(max_length=255, unique=True)
     abbreviation = models.CharField(max_length=16, null=True, unique=True)
     region = models.ForeignKey('Region', on_delete=models.PROTECT)
@@ -1147,7 +1166,7 @@ class District(models.Model):
         return self.name
 
 
-class CampsiteClass(models.Model):
+class CampsiteClass(SanitiseMixin):
 
     name = models.CharField(max_length=255, unique=True)
     camp_unit_suitability = TaggableManager()
@@ -1160,6 +1179,10 @@ class CampsiteClass(models.Model):
     deleted = models.BooleanField(default=False)
     description = models.TextField(null=True)
     max_vehicles = models.PositiveIntegerField(default=1)
+
+    def save(self, *args, **kwargs):
+        kwargs.setdefault("exclude_sanitise", ["description"])  # fields that keep allowed html (task 19165)
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return self.name
@@ -1269,7 +1292,7 @@ class CampsiteBooking(models.Model):
             raise ValidationError('Duplicate booking date for this campsite.')
         super(CampsiteBooking, self).save(*args, **kwargs)
 
-class AdditionalBooking(models.Model):
+class AdditionalBooking(SanitiseMixin):
       booking = models.ForeignKey('Booking', related_name="additional_booking", on_delete=models.CASCADE, null=True)
       fee_description = models.CharField(max_length=150, null=True, blank=True)
       amount = models.DecimalField(max_digits=8, decimal_places=2, default='0.00', blank=True, null=True, unique=False)
@@ -1310,7 +1333,7 @@ class CampsiteRateManager(models.Manager):
         return self.filter(Q(date_end__gte=date.today()) | Q(date_end__isnull=True)).filter(date_start__lte=date.today())
 
 
-class CampsiteRate(models.Model):
+class CampsiteRate(SanitiseMixin):
     RATE_TYPE_CHOICES = (
         (0, 'Standard'),
         (1, 'Discounted'),
@@ -1376,7 +1399,7 @@ class CampsiteRate(models.Model):
         self.save()
 
 
-class Booking(models.Model):
+class Booking(SanitiseMixin):
     BOOKING_TYPE_CHOICES = (
         (0, 'Reception booking'),
         (1, 'Internet booking'),
@@ -1930,7 +1953,7 @@ class Booking(models.Model):
 
         return payment_dict
 
-class BookingLog(models.Model):
+class BookingLog(SanitiseMixin):
      booking = models.ForeignKey(Booking, related_name='booking_log', on_delete=models.CASCADE)
      message = models.TextField(null=True, blank=True)
      created = models.DateTimeField(auto_now_add=True)
@@ -1938,7 +1961,7 @@ class BookingLog(models.Model):
      def __str__(self):
         return '' #self.message (removed so it doesn't show in django admin inline)
 
-class BookingHistory(models.Model):
+class BookingHistory(SanitiseMixin):
     booking = models.ForeignKey(Booking, related_name='history', on_delete=models.CASCADE)
     created = models.DateTimeField(auto_now_add=True)
     arrival = models.DateField()
@@ -1952,14 +1975,14 @@ class BookingHistory(models.Model):
     updated_by = models.ForeignKey(EmailUser, on_delete=models.PROTECT, blank=True, null=True)
     invoice = models.ForeignKey(Invoice, null=True, blank=True, on_delete=models.PROTECT)
 
-class OutstandingBookingRecipient(models.Model):
+class OutstandingBookingRecipient(SanitiseMixin):
     email = models.EmailField()
 
     def __str__(self):
         return self.email
 
 
-class BookingInvoice(models.Model):
+class BookingInvoice(SanitiseMixin):
     booking = models.ForeignKey(Booking, related_name='invoices', on_delete=models.CASCADE)
     invoice_reference = models.CharField(max_length=50, null=True, blank=True, default='')
 
@@ -1983,7 +2006,7 @@ class BookingInvoice(models.Model):
         # Set cache Status to Stale
         self.booking.save()
 
-class BookingVehicleRego(models.Model):
+class BookingVehicleRego(SanitiseMixin):
     """docstring for BookingVehicleRego."""
     VEHICLE_CHOICES = (
         ('vehicle', 'Vehicle'),
@@ -2015,7 +2038,7 @@ class BookingVehicleRego(models.Model):
     #    unique_together = ('booking', 'rego')
 
 
-class ParkEntryRate(models.Model):
+class ParkEntryRate(SanitiseMixin):
 
     vehicle = models.DecimalField(max_digits=8, decimal_places=2, default='0.00')
     concession = models.DecimalField(max_digits=8, decimal_places=2, default='0.00')
@@ -2043,7 +2066,7 @@ class ParkEntryRate(models.Model):
         today = datetime.now().date()
         return (self.period_start > today and not self.period_end) or (self.period_start > today <= self.period_end)
     
-class Notice(models.Model):
+class Notice(SanitiseMixin):
 
     NOTICE_TYPE_CHOICES = (
         (0, 'Red Warning'),
@@ -2062,11 +2085,12 @@ class Notice(models.Model):
            return '{}'.format(strip_tags(self.message).replace('&nbsp;', ' '))
     
     def save(self, *args, **kwargs):
+        kwargs.setdefault("exclude_sanitise", ["message"])  # fields that keep allowed html (task 19165)
         cache.delete('utils_cache.get_notices()')
         self.full_clean()
         super(Notice, self).save(*args, **kwargs)
 
-class MyBookingNotice(models.Model):
+class MyBookingNotice(SanitiseMixin):
 
     notice_type = models.IntegerField(choices=Notice.NOTICE_TYPE_CHOICES,default=0)
     message = models.TextField(null=True, blank=True, default='')
@@ -2078,6 +2102,7 @@ class MyBookingNotice(models.Model):
            return '{}'.format(strip_tags(self.message).replace('&nbsp;', ' '))
     
     def save(self, *args, **kwargs):
+        kwargs.setdefault("exclude_sanitise", ["message"])  # fields that keep allowed html (task 19165)
         cache.delete('utils_cache.get_my_booking_notices()')
         self.full_clean()
         super(MyBookingNotice, self).save(*args, **kwargs)
@@ -2085,7 +2110,7 @@ class MyBookingNotice(models.Model):
 
 # REASON MODELS
 # =====================================
-class Reason(models.Model):
+class Reason(SanitiseMixin):
     text = models.TextField()
     editable = models.BooleanField(default=True, editable=False)
 
@@ -2125,7 +2150,7 @@ class DiscountReason(Reason):
 # =====================================
 
 
-class ViewPriceHistory(models.Model):
+class ViewPriceHistory(SanitiseMixin):
     id = models.IntegerField(primary_key=True)
     date_start = models.DateField()
     date_end = models.DateField()
@@ -2444,7 +2469,7 @@ class ParkEntryRateListener(object):
             price_before.period_end = None
             price_before.save()
 
-class Page(models.Model):
+class Page(SanitiseMixin):
     title = models.CharField(max_length=100)
     slug = models.SlugField(max_length=100, unique=True)
     content = models.TextField()
@@ -2459,6 +2484,7 @@ class Page(models.Model):
         return self.title + ' - ' + self.slug
 
     def save(self, *args, **kwargs):
+        kwargs.setdefault("exclude_sanitise", ["content"])  # fields that keep allowed html (task 19165)
         old_slug = self._original_slug if hasattr(self, '_original_slug') else None
         remove_old_cache = False
 
@@ -2476,7 +2502,7 @@ class Page(models.Model):
 
 
 
-class PublicSiteClosure(models.Model):
+class PublicSiteClosure(SanitiseMixin):
     NOTICE_TYPE_CHOICES = (
         (0, 'Red Warning'),
         (1, 'Orange Warning'),
@@ -2494,6 +2520,7 @@ class PublicSiteClosure(models.Model):
 
     def save(self, *args, **kwargs):
 
+        kwargs.setdefault("exclude_sanitise", ["message"])  # fields that keep allowed html (task 19165)
         if PublicSiteClosure.objects.filter(closure_start__lte=self.closure_start,closure_end__gt=self.closure_start).exclude(id=self.id).count() > 0:
             if self.closure_start:
                 raise ValidationError('Closure Start period already exists {}'.format(self.closure_start.strftime("%Y-%m-%d")))            
@@ -2512,7 +2539,7 @@ class PublicSiteClosure(models.Model):
 
 
 
-class BulkRefundCancel(models.Model):
+class BulkRefundCancel(SanitiseMixin):
 
         BULK_STATUS_CHOICES = (
             (0, 'Pending'),
@@ -2535,7 +2562,7 @@ class BulkRefundCancel(models.Model):
             self.full_clean()
             super(BulkRefundCancel, self).save(*args, **kwargs)
 
-class BulkRefundCancelList(models.Model):
+class BulkRefundCancelList(SanitiseMixin):
 
     REFUND_TYPE_CHOICES = (
         (0, 'Pending Full Refund'),
