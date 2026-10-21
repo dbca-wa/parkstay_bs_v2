@@ -22,8 +22,6 @@ class BookingTimerMiddleware(object):
         # Run before executing any function code
 
         if 'ps_booking' in request.session:               
-               if "token_payment_session" in request.session:
-                    del request.session["token_payment_session"]
                if request.path.startswith("/ledger-api/process-payment") or request.path.startswith('/ledger-api/payment-details'):                                       
                     checkouthash =  hashlib.sha256(str(request.session["ps_booking"]).encode('utf-8')).hexdigest()
                     checkouthash_cookie = request.COOKIES.get('checkouthash')
@@ -54,12 +52,9 @@ class BookingTimerMiddleware(object):
     def pr(self, request):
         response= self.get_response(request)
         if request.path.startswith('/static') or request.path.startswith('/favicon') or request.path.startswith('/media') or request.path.startswith('/api') or request.path.startswith('/search-availability/information/') or request.path.startswith('/search-availability/campground/') or request.path.startswith('/campground-image') or request.path == '/':
-             if "token_payment_session" in request.session:
-                  del request.session["token_payment_session"]
+             pass
         else:
             if 'ps_booking' in request.session:
-                if "token_payment_session" in request.session:
-                    del request.session["token_payment_session"]
                 try:
                     booking = Booking.objects.get(pk=request.session['ps_booking'])
                 except:
@@ -113,11 +108,6 @@ class BookingTimerMiddleware(object):
                     return response
                     #return HttpResponseRedirect(reverse('public_make_booking'))
                
-                #parkstay request.session for token-based payment to prevent redirect (delete on non-relevant requests)
-                else:
-                    if TOKEN_CHECKOUT_PATH.match(request.path):
-                         request.session["token_payment_session"] = request.GET.get("token")
-                    return response
         return response
 
 

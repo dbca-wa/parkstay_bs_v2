@@ -14,6 +14,7 @@ def parkstay_url(request):
     checkouthash = hashlib.sha256(str(uuid.uuid4()).encode('utf-8')).hexdigest()
     if 'ps_booking' in request.session:
         checkouthash =  hashlib.sha256(str(request.session["ps_booking"]).encode('utf-8')).hexdigest()
+
     #user_request = request.user
     #if user_request.is_authenticated is True:
     #    is_authenticated = True
@@ -30,6 +31,12 @@ def parkstay_url(request):
                booking_timer = (booking.expiry_time-timezone.now()).seconds if booking else -1      
            except:
                pass
+           #check for ledger-api-client set token checkouthash - if it is remove ps_booking and checkouthash session variables and replace checkouthash
+           if 'token_payment_session' in request.session:
+               del request.session['ps_booking']
+               del request.session['checkouthash']
+               checkouthash =  hashlib.sha256(str(request.session["token_payment_session"]).encode('utf-8')).hexdigest()
+
 
     # Permissions are cached per user email so admins can invalidate immediately on save
     parkstay_officers = None
