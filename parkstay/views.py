@@ -10,7 +10,7 @@ from django.contrib.auth.mixins import UserPassesTestMixin, LoginRequiredMixin
 from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import ensure_csrf_cookie
-from ledger_api_client.utils import create_basket_session, create_checkout_session, place_order_submission, use_existing_basket, use_existing_basket_from_invoice, process_api_refund
+from ledger_api_client.utils import create_basket_session, create_checkout_session, place_order_submission, use_existing_basket, use_existing_basket_from_invoice, process_api_refund, validate_booking_and_invoice_references
 from django import forms
 from django.contrib import messages
 from ledger_api_client import utils as ledger_api_utils
@@ -877,9 +877,53 @@ class CancelBookingView(TemplateView):
 class BookingSuccessView(TemplateView):
     template_name = 'ps/booking/success.html'
 
+    def token_success_response(self, request, basket, today):
+        booking_reference = basket.booking_reference
+        booking_id = int(booking_reference[len(settings.BOOKING_PREFIX) + 1:])
+        booking = Booking.objects.get(id=booking_id)
+
+        try:
+            utils.bind_booking(booking, basket)
+            del request.session['token_payment_session']
+            request.session['ps_last_booking'] = booking.id
+        except BindBookingException:
+            return redirect('public_make_booking')
+
+        invoices_obj = BookingInvoice.objects.filter(booking=booking)
+        invoices_array = []
+        for i in invoices_obj:
+            invoices_array.append(i.invoice_reference)
+
+        context = {
+            'booking': booking,
+            'today' : today,
+            'invoices':invoices_array
+        }
+        response = render(request, self.template_name, context)
+        response.delete_cookie(settings.OSCAR_BASKET_COOKIE_OPEN)
+        return response
+
     def get(self, request, *args, **kwargs):
+        print("BookingSuccessView")
         checkouthash = request.GET.get('checkouthash','')
         today = timezone.now().date()
+
+        invoice_reference = request.GET.get('invoice','')
+        #Alt handling with token_payment_session and invoice
+        #first, check if the token_payment_session can be matched to the provided invoice - if not, proceed as normal
+        if 'token_payment_session' in request.session:
+            valid_basket_token = False
+            #get the basket set in the token_payment_session
+            try:
+                basket = Basket.objects.filter(status='Submitted', id=request.session['token_payment_session']).order_by('-id').first()
+                #validate the invoice reference and the basket are related
+                valid_basket_token = validate_booking_and_invoice_references(basket.booking_reference, invoice_reference)
+                #if they are not, proceed as normal, otherwise call alt func
+                if valid_basket_token:
+                    return self.token_success_response(request, basket, today)
+            except Exception as e:
+                print("TOKEN SUCCESS EXCEPTION")
+                print(e)
 
         try:
             basket = None
