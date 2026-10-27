@@ -46,11 +46,12 @@
 
    createCookie('checkouthash', "{{ checkouthash }}");
 
-   setInterval(function() {
+   var checkoutInterval = setInterval(function() {
 	   //	console.log("checkouthash"+readCookie("checkouthash"));
 	   var checkouthash_cookie = readCookie("checkouthash");
 	   if (payment_processing.var.checkouthash != checkouthash_cookie) {
-		   window.location = "/booking/abort_session"
+			clearInterval(checkoutInterval);
+		    window.location = "/booking/abort_session"
 	   }		
    },"500");
    
