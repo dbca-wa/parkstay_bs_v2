@@ -27,7 +27,7 @@
 01 0 * * *  python /app/manage.py build_campsite_attributes  >> /app/logs/build_campsite_attributes.log 2>&1
 */2 17-23 * * *  python /app/manage.py send_reminder_email  >> /app/logs/send_reminder_email.log 2>&1
 # 10 9 * * 0 python3 /app/manage.py appmonitor_check >> /app/logs/appmonitor_client.log 2>&1
-30 3 * * * python3 /app/manage.py clearsessions >> /app/logs/clearsessions.log 2>&1
+0 * * * * python3 /app/manage.py clearsessions >> /app/logs/clearsessions.log 2>&1
 
 1 0 * * *  /bin/log_rotate.sh  >> /app/logs/log_rotate.log 2>&1
 
