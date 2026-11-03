@@ -60,15 +60,13 @@ export default defineConfig(({ mode }) => {
         },
         build: {
             manifest: 'manifest.json',
-            filenameHashing: false,
             commonjsOptions: { transformMixedEsModules: true },
-            root: path.resolve(__dirname, './src'),
             outDir: path.resolve(
                 __dirname,
-                `../../static/${applicationNameShort}_vue` // searchavail2_vue.js
+                `../../static/${applicationNameShort}_vue`
             ),
-            publicPath: ``,
             sourcemap: true,
+            emptyOutDir: true,
             rollupOptions: {
                 input: {
                     main: path.resolve(__dirname, 'src/main.js'),
@@ -76,11 +74,18 @@ export default defineConfig(({ mode }) => {
                 output: {
                     entryFileNames: 'js/[name].js',
                     chunkFileNames: 'js/[name].js',
-                    assetFileNames: '[ext]/[name].[ext]',
+                    assetFileNames: (assetInfo) => {
+                        // Keep the original folder structure for static files
+                        if (assetInfo.name && assetInfo.name.endsWith('.css')) {
+                            return 'css/[name][extname]';
+                        }
+                        if (assetInfo.name && assetInfo.name.endsWith('.woff')) {
+                            return 'woff/[name][extname]';
+                        }
+                        return 'assets/[name][extname]';
+                    },
                 },
             },
-            exclude: ['jquery', 'bootstrap'],
-            emptyOutDir: true,
         },
     };
 });
