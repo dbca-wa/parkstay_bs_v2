@@ -7,7 +7,7 @@ from ledger_api_client.pdf import create_invoice_pdf_bytes
 from ledger_api_client.ledger_models import Invoice
 #from ledger.payments.models import Invoice
 #from ledger.emails.emails import EmailBase2 as EmailBase
-from ledger_api_client.emails import EmailBase2 as EmailBase
+from wagov_utils.components.utils.email import TemplateEmailBase as WAGovUtilsTemplateEmailBase
 from django.template.loader import render_to_string, get_template
 from django.core.exceptions import ValidationError
 #from django.template import Context
@@ -24,7 +24,9 @@ from email import encoders
 default_campground_email = settings.EMAIL_FROM
 
 
-class TemplateEmailBase(EmailBase):
+# Every Parkstay email must be sent by wagov_utils TemplateEmailBase.send()
+# (EMAIL_DELIVERY switch, logs/email.log, System-Environment header).
+class TemplateEmailBase(WAGovUtilsTemplateEmailBase):
     subject = ''
     html_template = 'ps/email/base_email.html'
     # txt_template can be None, in this case a 'tag-stripped' version of the html will be sent. (see send)
