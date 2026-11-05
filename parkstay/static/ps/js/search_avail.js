@@ -1118,7 +1118,8 @@ calculate_arrival_days_old_07112025: function(targetDateString) {
     var campground_departure_date_tz = new Date(search_avail.var.camping_period["checkout"]);
 
     var campground_release_date = null;
-    if (campground_release_date_tz != null) {
+    if (campground_release_date_tz == null  || search_avail.var.campground_release_date == 'None') {
+    } else {
       campground_release_date = new Intl.DateTimeFormat("en-CA", {
           timeZone: "Australia/Perth",
           year: "numeric",
