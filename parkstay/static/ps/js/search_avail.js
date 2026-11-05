@@ -1117,13 +1117,15 @@ calculate_arrival_days_old_07112025: function(targetDateString) {
     var campground_release_date_tz = new Date(search_avail.var.campground_release_date);
     var campground_departure_date_tz = new Date(search_avail.var.camping_period["checkout"]);
 
-    
-    var campground_release_date = new Intl.DateTimeFormat("en-CA", {
-        timeZone: "Australia/Perth",
-        year: "numeric",
-        month: "2-digit",
-        day: "2-digit"
-    }).format(campground_release_date_tz);
+    var campground_release_date = null;
+    if (campground_release_date_tz != null) {
+      campground_release_date = new Intl.DateTimeFormat("en-CA", {
+          timeZone: "Australia/Perth",
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit"
+      }).format(campground_release_date_tz);
+    }
 
     var campground_departure_date = new Intl.DateTimeFormat("en-CA", {
             timeZone: "Australia/Perth",
