@@ -1114,8 +1114,25 @@ calculate_arrival_days_old_07112025: function(targetDateString) {
       "<center><img style='padding-top: 20px;' height='70' src='/static/ps/img/parkstay_loader_bar_white_500.gif'></center>"
     );
 
-    var campground_release_date = new Date(search_avail.var.campground_release_date);
-    var campground_departure_date = new Date(search_avail.var.camping_period["checkout"]);
+    var campground_release_date_tz = new Date(search_avail.var.campground_release_date);
+    var campground_departure_date_tz = new Date(search_avail.var.camping_period["checkout"]);
+
+    
+    var campground_release_date = new Intl.DateTimeFormat("en-CA", {
+        timeZone: "Australia/Perth",
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit"
+    }).format(campground_release_date_tz);
+
+    var campground_departure_date = new Intl.DateTimeFormat("en-CA", {
+            timeZone: "Australia/Perth",
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit"
+        }).format(campground_departure_date_tz);
+
+    
 
     if (search_avail.var.campground_release_date == null || search_avail.var.campground_release_date == 'None') {
         if (search_avail.var.arrival_days >= search_avail.var.max_advance_booking) {
