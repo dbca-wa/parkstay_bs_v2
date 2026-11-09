@@ -197,44 +197,6 @@
                 </div>
             </div>
         </div>
-        <form ref="oracle_form">
-            <div class="well well-sm">
-                <div class="row">
-                    <div class="col-lg-12">
-                        <div class="col-lg-12">
-                            <h3 style="margin-bottom:20px;">Oracle Job</h3>
-                        </div>
-                        <div class="row">
-                            <div class="col-lg-12">
-                                <div class="col-sm-6">
-                                    <div class="form-group">
-                                        <label class="form-label required">
-                                            <span class="bi bi-calendar3"></span>
-                                            Date: 
-                                        </label>
-                                        <div class="input-group date" ref="oracleDatePicker"
-                                            id="oracleDatePickerElement">
-                                            <input type="text" class="form-control" name="oracle_date"
-                                                placeholder="DD/MM/YYYY" required />
-                                        </div>
-                                    </div>
-                                    <div class="form-group">
-                                        <button @click.prevent="runOracleJob()" class="btn btn-primary pull-left">Run
-                                            Job</button>
-                                    </div>
-                                </div>
-                                <div class="col-sm-6">
-                                    <div class="checkbox">
-                                        <label><input v-model="oracle_override" type="checkbox" value="">Override closed
-                                            period check</label>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </form>
     </div>
 </template>
 
@@ -244,8 +206,6 @@ import { $, swal, getDateTimePicker, dateUtils, DateTime, api_endpoints, helpers
 
 const paymentsForm = ref(null)
 const refund_form = ref(null)
-const oracle_form = ref(null)
-const oracleDatePicker = ref(null)
 const booking_settlements_form = ref(null)
 const bookings_form = ref(null)
 const bookingSettlementsDatePicker = ref(null)
@@ -272,7 +232,6 @@ const selected_region = ref({
     name: '',
     districts: []
 })
-const oracle_override = ref(false)
 watch(() => region.value, function (value) {
     district.value = '';
     if (value) {
@@ -300,7 +259,6 @@ const addEventListeners = function () {
     accountsDateEndPicker.value = getDateTimePicker($('#accountsDateEndPicker'), datepickerOptions);
     flatDateEndPicker.value = getDateTimePicker($('#flatDateEndPicker'), datepickerOptions);
     refundsEndPicker.value = getDateTimePicker($('#refundsEndPicker'), datepickerOptions);
-    oracleDatePicker.value = getDateTimePicker($('#oracleDatePickerElement'), datepickerOptions);
     bookingSettlementsDatePicker.value = getDateTimePicker($('#bookingSettlementsDatePickerElement'), datepickerOptions);
     bookingsDatePicker.value = getDateTimePicker($('#bookingsDatePickerElement'), datepickerOptions);
 
@@ -339,27 +297,6 @@ const addEventListeners = function () {
     });
     addFormValidations();
     fetchRegions();
-}
-const runOracleJob = function () {
-
-    if (oracle_form.value.valid()) {
-        const date = oracleDatePicker.value.dates.lastPicked
-        let data = date ? dateUtils.formatDate(date, 'dd/MM/yyyy') : '';
-        let override = oracle_override.value ? 'true' : 'false';
-        fetch('/api/oracle_job?date=' + data + '&override=' + override).then((response) => {
-            swal({
-                type: 'success',
-                title: 'Job Success',
-                text: 'The oracle job was completed successfully',
-            })
-        }).catch((error) => {
-            swal({
-                type: 'error',
-                title: 'Oracle Job Error',
-                text: helpers.apiVueResourceError(error),
-            })
-        })
-    }
 }
 const getBookingSettlementsReport = function () {
 
@@ -497,15 +434,6 @@ const addFormValidations = function () {
         messages: {
             refund_start_date: "Field is required",
             refund_end_date: "Field is required",
-        },
-        showErrors: helpers.formUtils.utilShowFormErrors
-    });
-    oracle_form.value.validate({
-        rules: {
-            oracle_date: 'required',
-        },
-        messages: {
-            oracle_date: "Field is required",
         },
         showErrors: helpers.formUtils.utilShowFormErrors
     });

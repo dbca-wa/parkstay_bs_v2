@@ -58,7 +58,6 @@ api_patterns = [
     #url(r'^api/profile/update_personal$', api.UpdateProfilePersonal.as_view(), name='update-profile-personal'),
     #url(r'^api/profile/update_contact$', api.UpdateProfileContact.as_view(), name='update-profile-contact'),
     #url(r'^api/profile/update_address$', api.UpdateProfileAddress.as_view(), name='update-profile-address'),
-    re_path(r'^api/oracle_job$', api.OracleJob.as_view(), name='get-oracle'),
     re_path(r'^api/bulkPricing', api.BulkPricingView.as_view(), name='bulkpricing-api'),
     re_path(r'^api/campground_availabilty_view/', api.campground_availabilty_view, name='campground_availabilty_view'),
     re_path(r'^api/campsite_availablity_view/(?P<campground_id>[0-9]+)/', api.campsite_availablity_view, name='campsite_availablity_view'),

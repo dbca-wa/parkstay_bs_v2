@@ -16,7 +16,7 @@ from django.utils import timezone
 from ledger_api_client.ledger_models import Invoice
 from ledger_api_client.ledger_models import EmailUserRO as EmailUser
 
-from ledger_api_client.utils import oracle_parser, update_payments
+from ledger_api_client.utils import update_payments
 from ledger_api_client.utils import create_basket_session, create_checkout_session, place_order_submission, use_existing_basket, use_existing_basket_from_invoice, calculate_excl_gst
 from parkstay import models as parkstay_models
 from parkstay.models import (Campground, Campsite, CampsiteRate, CampsiteBooking, Booking, BookingInvoice, CampsiteBookingRange, CampgroundBookingRange, CampgroundStayHistory, ParkEntryRate, BookingVehicleRego, CampsiteBookingLegacy, PublicSiteClosure)
@@ -1976,10 +1976,6 @@ def daterange(start_date, end_date):
     for n in range(int((end_date - start_date).days)):
         yield start_date + timedelta(n)
 
-
-def oracle_integration(date, override):
-    system = settings.PS_PAYMENT_SYSTEM_ID.replace("S","0") 
-    oracle_codes = oracle_parser(date, system, 'Parkstay', override)
 
 def get_ledger_totals():
     ledger_totals = {"total_failed": 0}

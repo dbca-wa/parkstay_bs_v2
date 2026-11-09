@@ -120,7 +120,6 @@ from parkstay.serialisers import (CampsiteBookingSerialiser,
                                   ContactSerializer as UserContactSerializer,
                                   PersonalSerializer,
                                   PhoneSerializer,
-                                  OracleSerializer,
                                   BookingHistorySerializer
                                   )
 from parkstay.helpers import is_officer
@@ -4838,28 +4837,3 @@ class UpdateProfileAddress(views.APIView):
         except Exception as e:
             print(traceback.print_exc())
             raise serializers.ValidationError(str(e))
-
-
-class OracleJob(views.APIView):
-    renderer_classes = [JSONRenderer, ]
-    permission_classes = [OfficerPermission,]
-
-    def get(self, request, format=None):
-        try:
-            data = {
-                "date": request.GET.get("date"),
-                "override": request.GET.get("override")
-            }
-            serializer = OracleSerializer(data=data)
-            serializer.is_valid(raise_exception=True)
-            utils.oracle_integration(serializer.validated_data['date'].strftime('%Y-%m-%d'), serializer.validated_data['override'])
-            data = {'successful': True}
-            return Response(data)
-        except serializers.ValidationError:
-            print(traceback.print_exc())
-            raise
-        except ValidationError as e:
-            raise serializers.ValidationError(repr(e.error_dict))
-        except Exception as e:
-            print(traceback.print_exc())
-            raise serializers.ValidationError(str(e[0]))
