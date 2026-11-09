@@ -134,6 +134,8 @@ DATA_UPLOAD_MAX_NUMBER_FIELDS = 10240
 SYSTEM_NAME = decouple.config('SYSTEM_NAME', default='Parkstay WA')
 EMAIL_FROM = decouple.config('EMAIL_FROM', default=ADMINS[0])
 DEFAULT_FROM_EMAIL = EMAIL_FROM
+# wagov_utils TemplateEmailBase sends emails only when this is 'on'
+EMAIL_DELIVERY = decouple.config('EMAIL_DELIVERY', default='off')
 WAITING_QUEUE_ENABLED = decouple.config('WAITING_QUEUE_ENABLED',default=False, cast=bool)
 QUEUE_GROUP_NAME = decouple.config('QUEUE_GROUP_NAME', default=None)
 QUEUE_WAITING_URL = decouple.config('QUEUE_WAITING_URL', default=None)

@@ -7,11 +7,10 @@ from ledger_api_client.pdf import create_invoice_pdf_bytes
 from ledger_api_client.ledger_models import Invoice
 #from ledger.payments.models import Invoice
 #from ledger.emails.emails import EmailBase2 as EmailBase
-from ledger_api_client.emails import EmailBase2 as EmailBase
+from wagov_utils.components.utils.email import TemplateEmailBase as WAGovUtilsTemplateEmailBase
 from django.template.loader import render_to_string, get_template
 from django.core.exceptions import ValidationError
 #from django.template import Context
-from django.core.mail import EmailMessage, EmailMultiAlternatives
 from email.mime.base import MIMEBase
 from django.core.files.base import ContentFile
 from parkstay import doctopdf
@@ -24,7 +23,9 @@ from email import encoders
 default_campground_email = settings.EMAIL_FROM
 
 
-class TemplateEmailBase(EmailBase):
+# Every Parkstay email must be sent by wagov_utils TemplateEmailBase.send()
+# (EMAIL_DELIVERY switch, logs/email.log, System-Environment header).
+class TemplateEmailBase(WAGovUtilsTemplateEmailBase):
     subject = ''
     html_template = 'ps/email/base_email.html'
     # txt_template can be None, in this case a 'tag-stripped' version of the html will be sent. (see send)
@@ -315,17 +316,12 @@ def email_log(line):
 
 def sendHtmlEmail(to,subject,context,template,cc,bcc,from_email,template_group,attachments=None):
     print ("start -- sendHtmlEmail")
-    email_delivery = decouple.config('EMAIL_DELIVERY', default='off')
     override_email = decouple.config('OVERRIDE_EMAIL', default=None)
-    email_instance = decouple.config('EMAIL_INSTANCE',default='DEV')
     logomime = None
     context['default_url'] = decouple.config('DEFAULT_HOST', default='')
     context['default_url_internal'] = decouple.config('DEFAULT_URL_INTERNAL', default='')
     log_hash = int(hashlib.sha1(str(datetime.datetime.now()).encode('utf-8')).hexdigest(), 16) % (10 ** 8)
     email_log(str(log_hash)+' '+subject+":"+str(to)+":"+template_group)
-    if email_delivery != 'on':
-        print ("EMAIL DELIVERY IS OFF NO EMAIL SENT -- email.py ")
-        return False
     if template is None:
         raise ValidationError('Invalid Template')
     if to is None:
@@ -344,7 +340,7 @@ def sendHtmlEmail(to,subject,context,template,cc,bcc,from_email,template_group,a
     context['body'] = get_template(template).render(context)
     # Main Email Template Style ( body template is populated in the center
     if template_group == 'system-oim':
-        main_template = get_template('ps/email/base_email-oim.html').render(context)
+        main_template = 'ps/email/base_email-oim.html'
     elif template_group == 'parkstayv2': 
         with open(settings.BASE_DIR+'/parkstay/static/ps/img/parkstay_bookings_logo.png','rb') as f:
             logomime = MIMEBase('image','png', filename='Parkstay Logo')
@@ -355,11 +351,9 @@ def sendHtmlEmail(to,subject,context,template,cc,bcc,from_email,template_group,a
             encoders.encode_base64(logomime)
             #parkstay/static/ps/img/parkstay_bookings_logo.png
 
-        main_template = get_template('ps/email/base_email-parkstay.html').render(context)
+        main_template = 'ps/email/base_email-parkstay.html'
     else:
-        main_template = get_template('ps/email/base_email2.html').render(context)
-
-    reply_to=None
+        main_template = 'ps/email/base_email2.html'
 
     if attachments is None:
         attachments = []
@@ -373,6 +367,9 @@ def sendHtmlEmail(to,subject,context,template,cc,bcc,from_email,template_group,a
         #     _attachments.append((filename, content, mime))
         #else:
              _attachments.append(attachment)
+    if logomime:
+        # Django attaches a MIMEBase item as it is (inline logo, cid:parkstay_logo)
+        _attachments.append(logomime)
 
     if override_email is not None:
         to = override_email.split(",")
@@ -381,45 +378,12 @@ def sendHtmlEmail(to,subject,context,template,cc,bcc,from_email,template_group,a
         if bcc:
             bcc = override_email.split(",")
 
-    if len(to) > 1:
-        msg = EmailMultiAlternatives(subject, "Please open with a compatible html email client.", from_email=from_email, to=to, attachments=_attachments, cc=cc, bcc=bcc, reply_to=reply_to, headers={'System-Environment': email_instance})
-        if logomime:
-           msg.attach(logomime)
+    # Send through wagov_utils: EMAIL_DELIVERY switch, email log, System-Environment header
+    email_obj = TemplateEmailBase(subject=subject, html_template=main_template)
+    email_obj.txt_template = 'ps/email/html_only.txt'
+    result = email_obj.send(to, from_address=from_email, context=context, attachments=_attachments, cc=cc, bcc=bcc)
 
-        msg.attach_alternative(main_template, 'text/html')
-
-        #msg = EmailMessage(subject, main_template, to=[to_email],cc=cc, from_email=from_email)
-        #msg.content_subtype = 'html'
-        #if attachment1:
-        #    for a in attachment1:
-        #        msg.attach(a)
-        try:
-             email_log(str(log_hash)+' '+subject)
-             msg.send()
-             email_log(str(log_hash)+' Successfully sent to mail gateway')
-        except Exception as e:
-                email_log(str(log_hash)+' Error Sending - '+str(e))
-
-    else:
-          msg = EmailMultiAlternatives(subject, "Please open with a compatible html email client.", from_email=from_email, to=to, attachments=_attachments, cc=cc, bcc=bcc, reply_to=reply_to, headers={'System-Environment': email_instance})
-          if logomime:
-              msg.attach(logomime)
-
-          msg.attach_alternative(main_template, 'text/html')
-
-          #msg = EmailMessage(subject, main_template, to=to,cc=cc, from_email=from_email)
-          #msg.content_subtype = 'html'
-          #if attachment1:
-          #    for a in attachment1:
-          #        msg.attach(a)
-          try:
-               email_log(str(log_hash)+' '+subject)
-               msg.send()
-               email_log(str(log_hash)+' Successfully sent to mail gateway')
-          except Exception as e:
-               email_log(str(log_hash)+' Error Sending - '+str(e))
-
-
-    return True
+    # Same return value as before: False only when email delivery is off
+    return result is not False
 
 
